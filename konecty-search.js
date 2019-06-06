@@ -33,7 +33,7 @@ module.exports = function (RED) {
           if (ff.to) {
             ff.value["less_or_equals"] = {"$date": moment(ff.to + " " + ff.toTime, "MM/DD/YYYY HH:mm").format() };
           }
-        } else if (valueType === "msg") ff.value = msg[ff.value];
+        } else if (valueType === "msg") ff.value = ff.value.split('.').reduce((o,k) => {return o[k]}, msg);
         else if (valueType === "flow") ff.value = flow.get(ff.value);
         else if (valueType === "global") ff.value = global.get(ff.value);
         else if (valueType === "num") ff.value = Number(ff.value);
