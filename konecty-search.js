@@ -26,10 +26,13 @@ module.exports = function (RED) {
           ff.operator = "equals";
           ff.value = ff.lookupId;
         } else if (ff.operator === "between") {
-          ff.value = {
-            "greater_or_equals": {"$date": moment(ff.from + " " + ff.fromTime, "MM/DD/YYYY HH:mm").format() },
-            "less_or_equals": {"$date": moment(ff.to + " " + ff.toTime, "MM/DD/YYYY HH:mm").format() }
-          };
+          ff.value = {};
+          if (ff.from) {
+            ff.value["greater_or_equals"] = {"$date": moment(ff.from + " " + ff.fromTime, "MM/DD/YYYY HH:mm").format() };
+          }
+          if (ff.to) {
+            ff.value["less_or_equals"] = {"$date": moment(ff.to + " " + ff.toTime, "MM/DD/YYYY HH:mm").format() };
+          }
         } else if (type === "msg") ff.value = msg[ff.value];
         else if (type === "flow") ff.value = flow.get(ff.value);
         else if (type === "global") ff.value = global.get(ff.value);
