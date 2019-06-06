@@ -1,6 +1,16 @@
 const axios_instance = require('axios');
 const moment = require('moment');
 
+function parseValue(msg, value, type) {
+  if (type == "msg") value = value.split('.').reduce((o,k) => {return o[k]}, msg);
+  else if (type == "flow") value = flow.get(value);
+  else if (type == "global") value = global.get(value);
+  else if (type == "num") value = Number(value);
+  else if (type == "bool" && value == "true") value = true;
+  else if (type == "bool" && value == "false") value = false;
+  return value;
+}
+
 module.exports = function (RED) {
   function KonectySearchNode(config) {
     RED.nodes.createNode(this, config);
@@ -9,36 +19,31 @@ module.exports = function (RED) {
     let global = node.context().global;
 
     node.on('input', function (msg) {
-      // node.log('>> name......: ' + config.name);
-      // node.log('>> namespace.: ' + config.namespace);
-      // node.log('>> document..: ' + config.doc);
-      // node.log('>> filter....: ' + config.filter);
-      // node.log('>> url.......: ' + node.credentials.url);
-      // node.log('>> token.....: ' + node.credentials.token);
-
       // FILTER EVALUATION
       let filter = JSON.parse(config.filter);
       for (let i=0, j=filter.conditions.length; i<j; i++) {
-        let ff = filter.conditions[i];
-        let valueType = filter.conditions[i].valueType;
-        if (ff.operator === "lookup") {
-          ff.term += "._id";
-          ff.operator = "equals";
-          ff.value = ff.lookupId;
-        } else if (ff.operator === "between") {
-          ff.value = {};
-          if (ff.from) {
-            ff.value["greater_or_equals"] = {"$date": moment(ff.from + " " + ff.fromTime, "MM/DD/YYYY HH:mm").format() };
+        let c = filter.conditions[i];
+        c.value1 = parseValue(msg, c.value1, c.value1Type);
+        c.value2 = parseValue(msg, c.value2, c.value2Type);
+        if (c.operator === "lookup") {
+          c.term += "._id";
+          c.operator = "equals";
+          c.value = c.lookupId;
+        } else if (c.operator === "between") {
+          c.value = {};
+          if (c.value1) {
+            if (c.fieldType == "dateTime") c.value["greater_or_equals"] = {"$date": moment(c.value1, "YYYY-MM-DD HH:mm").format() };
+            else if (c.fieldType == "date") c.value["greater_or_equals"] = {"$date": moment(c.value1, "YYYY-MM-DD").format() };
+            else if (c.fieldType == "money" || c.fieldType == "number") c.value["greater_or_equals"] = Number(c.value1);
           }
-          if (ff.to) {
-            ff.value["less_or_equals"] = {"$date": moment(ff.to + " " + ff.toTime, "MM/DD/YYYY HH:mm").format() };
+          if (c.value2) {
+            if (c.fieldType == "dateTime") c.value["less_or_equals"] = {"$date": moment(c.value2, "YYYY-MM-DD HH:mm").format() };
+            else if (c.fieldType == "date") c.value["less_or_equals"] = {"$date": moment(c.value2, "YYYY-MM-DD").format() };
+            else if (c.fieldType == "money" || c.fieldType == "number") c.value["less_or_equals"] = Number(c.value2);
           }
-        } else if (valueType === "msg") ff.value = ff.value.split('.').reduce((o,k) => {return o[k]}, msg);
-        else if (valueType === "flow") ff.value = flow.get(ff.value);
-        else if (valueType === "global") ff.value = global.get(ff.value);
-        else if (valueType === "num") ff.value = Number(ff.value);
-        else if (valueType === "bool" && ff.value === "true") ff.value = true;
-        else if (valueType === "bool" && ff.value === "false") ff.value = false;
+        } else {
+          c.value = c.value1;
+        }
       }
 
       let root_url = node.credentials.url.trim();

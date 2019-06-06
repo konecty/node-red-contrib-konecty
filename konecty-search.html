@@ -29,21 +29,21 @@
 <script type="text/x-red" data-help-name="konecty-search">
   <p>A full featured search node for Konecty CRM entities.</p>
   <p>For the first time, you need to fill data, click save and then reopen node to be able to add filters.</p>
+  <p>Use "YYYY-MM-DD" and "YYYY-MM-DD HH:MM" formats for <em>date</em> and <em>datetime</em> filters.</p>
 </script>
 
 <script type="text/javascript">
   var operatorsByType = {
-    // any: [ 'equals', 'not_equals', 'starts_with', 'end_with', 'contains', 'not_contains', 'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals', 'between', 'current_user', 'not_current_user', 'current_user_group', 'not_current_user_group', 'current_user_groups', 'in', 'not_in', 'exists'],
-    any: [ 'equals', 'not_equals', 'starts_with', 'end_with', 'contains', 'not_contains', 'between', 'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals', 'exists', 'lookup'],
   	text: ['exists', 'equals', 'not_equals', 'in', 'not_in', 'contains', 'not_contains', 'starts_with', 'end_with'],
   	url: ['exists', 'equals', 'not_equals', 'in', 'not_in', 'contains', 'not_contains', 'starts_with', 'end_with'],
   	'email.address': ['exists', 'equals', 'not_equals', 'in', 'not_in', 'contains', 'not_contains', 'starts_with', 'end_with'],
-  	number: [ 'exists', 'equals', 'not_equals', 'in', 'not_in', 'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals', 'between'],
-  	autoNumber: [ 'exists', 'equals', 'not_equals', 'in', 'not_in', 'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals', 'between'],
-  	date: [ 'exists', 'equals', 'not_equals', 'in', 'not_in', 'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals', 'between'],
-  	dateTime: [ 'exists', 'equals', 'not_equals', 'in', 'not_in', 'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals', 'between'],
-  	'money.currency': [ 'exists', 'equals', 'not_equals', 'in', 'not_in', 'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals', 'between'],
-  	'money.value': [ 'exists', 'equals', 'not_equals', 'in', 'not_in', 'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals', 'between'],
+  	number: [ 'exists', 'equals', 'not_equals', 'in', 'not_in', /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'],
+  	autoNumber: [ 'exists', 'equals', 'not_equals', 'in', 'not_in', /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'],
+  	date: [ 'exists', 'equals', 'not_equals', 'in', 'not_in', /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'],
+  	dateTime: [ 'exists', 'equals', 'not_equals', 'in', 'not_in', /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'],
+    money: [ 'exists', 'equals', 'not_equals', 'in', 'not_in', /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'],
+  	'money.currency': [ 'exists', 'equals', 'not_equals', 'in', 'not_in', /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'],
+    'money.value': [ 'exists', 'equals', 'not_equals', 'in', 'not_in', /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'],
   	boolean: ['exists', 'equals', 'not_equals'],
   	'address.country': ['exists', 'equals', 'not_equals'],
   	'address.city': ['exists', 'equals', 'not_equals', 'in', 'not_in', 'contains', 'not_contains', 'starts_with', 'end_with'],
@@ -53,8 +53,8 @@
   	'address.number': ['exists', 'equals', 'not_equals'],
   	'address.postalCode': ['exists', 'equals', 'not_equals', 'contains'],
   	'address.complement': ['exists', 'equals', 'not_equals', 'contains'],
-  	'address.geolocation.0': [ 'exists', 'equals', 'not_equals', 'in', 'not_in', 'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals', 'between'],
-  	'address.geolocation.1': [ 'exists', 'equals', 'not_equals', 'in', 'not_in', 'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals', 'between'],
+  	'address.geolocation.0': [ 'exists', 'equals', 'not_equals', 'in', 'not_in', /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'],
+  	'address.geolocation.1': [ 'exists', 'equals', 'not_equals', 'in', 'not_in', /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'],
   	'personName.first': ['exists', 'equals', 'not_equals', 'contains', 'not_contains', 'starts_with', 'end_with'],
   	'personName.last': ['exists', 'equals', 'not_equals', 'contains', 'not_contains', 'starts_with', 'end_with'],
   	'personName.full': ['exists', 'equals', 'not_equals', 'contains', 'not_contains', 'starts_with', 'end_with'],
@@ -70,13 +70,13 @@
   	'filter.conditions': ['exists'],
   	richText: ['exists', 'contains'],
   	file: ['exists'],
-  	percentage: ['exists', 'equals', 'not_equals', 'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals', 'between']
+  	percentage: ['exists', 'equals', 'not_equals', /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between']
   };
 
   function t_operators(lang) {
     return ({
       pt_BR: {
-        "equals": "igual", "not_equals": "diferente", "starts_with": "começa com", "end_with": "termina com", "contains": "contém", "not_contains": "não contém", "less_than": "menor que", "greater_than": "maior que", "less_or_equals": "menor ou igual a", "greater_or_equals": "maior ou igual a", "between": "entre", "current_user": "usuário logado", "not_current_user": "outro usuário", "current_user_group": "grupo do usuário logado", "not_current_user_group": "outro grupo do usuário",   "current_user_groups": "grupos do usuário logado", "in": "está em []", "not_in": "não está em []", "exists": "existe", "lookup": "lookup"
+        "equals": "igual", "not_equals": "diferente", "starts_with": "começa com", "end_with": "termina com", "contains": "contém", "not_contains": "não contém", "less_than": "menor que", "greater_than": "maior que", "less_or_equals": "menor ou igual a", "greater_or_equals": "maior ou igual a", "between": "entre", "current_user": "usuário logado", "not_current_user": "outro usuário", "current_user_group": "grupo do usuário logado", "not_current_user_group": "outro grupo do usuário",   "current_user_groups": "grupos do usuário logado", "in": "está em [ ]", "not_in": "não está em [ ]", "exists": "existe", "lookup": "lookup"
       },
       en: {
         "equals": "equals", "not_equals": "not equals", "starts_with": "starts with", "end_with": "end with", "contains": "contains", "not_contains": "not contains", "less_than": "less than", "greater_than": "greater than", "less_or_equals": "less or equals", "greater_or_equals": "greater or equals", "between": "between", "current_user": "current user", "not_current_user": "not current user", "current_user_group": "current user group", "not_current_user_group": "not current user group", "current_user_groups": "current user groups", "in": "in", "not_in": "not in", "exists": "exists", "lookup": "lookup"
@@ -90,30 +90,23 @@
     $(row).html(`
       <table style="width:100%">
         <tr>
-          <td style="width:24%;">
+          <td id="konecty-search-wrapper-term-`+ index +`" style="width:auto;">
             <select id="konecty-search-term-`+ index +`" class="konecty-search-term" onChange="onChangeTerm(event,`+ index +`)" style="width:100%">
               <option></option>
             </select>
           </td>
-          <td style="width:29%;">
+          <td id="konecty-search-wrapper-operator-`+ index +`" style="width:25%; display:none;">
             <select id="konecty-search-operator-`+ index +`" class="konecty-search-operator" onChange="onChangeOperator(event,`+ index +`)" style="width:100%;">
-              <option></option>
+              <option selected></option>
             </select>
           </td>
-          <td style="width:45%;">
-            <div id="konecty-search-value-wrapper-`+ index +`" style="display:none;">
-              <input id="konecty-search-type-`+ index +`" class="konecty-search-type" type="hidden"></input>
-              <input id="konecty-search-value-`+ index +`" class="konecty-search-value" type="text" style="width:100%;"></input>
-              <input id="konecty-search-lookupId-`+ index +`" class="konecty-search-lookupId" type="hidden"></input>
-              <input id="konecty-search-lookupValue-`+ index +`" class="konecty-search-lookupValue" type="text" style="width:100%; display:none;"></input>
-              <div id="konecty-search-period-`+ index +`" style="display:none; width:100%;">
-                <input id="konecty-search-from-`+ index +`" class="konecty-search-from" type="text" style="width:60%"></input>
-                <select id="konecty-search-fromTime-`+ index +`" class="konecty-search-fromTime" style="width:37%" name=""></select>
-                <br>
-                <input id="konecty-search-to-`+ index +`" class="konecty-search-to" type="text" style="width:60%"></input>
-                <select id="konecty-search-toTime-`+ index +`" class="konecty-search-toTime" style="width:37%" name=""></select>
-              </div>
-            </div>
+          <td id="konecty-search-wrapper-value-`+ index +`" style="width:50%; display:none;">
+            <input id="konecty-search-value1-`+ index +`" class="konecty-search-value1" type="text" style="width:100%;"></input>
+            <input id="konecty-search-value2-`+ index +`" class="konecty-search-value2" type="text" style="width:100%;"></input>
+            <input id="konecty-search-value1-type-`+ index +`" class="konecty-search-value1-type" type="hidden"></input>
+            <input id="konecty-search-value2-type-`+ index +`" class="konecty-search-value2-type" type="hidden"></input>
+            <input id="konecty-search-lookupId-`+ index +`" class="konecty-search-lookupId" type="hidden"></input>
+            <input id="konecty-search-lookupValue-`+ index +`" class="konecty-search-lookupValue" type="text" style="width:100%; display:none;"></input>
           </td>
         </tr>
       </table>
@@ -125,44 +118,42 @@
     for (f of ff) {
       $("#konecty-search-term-" + index ).append($("<option></option>").attr("value", f.value).attr("data-type", f.type).text(f.label));
     }
-    $(".konecty-search-value").typedInput();
-    $(".konecty-search-value").typedInput("types", ["msg", "flow", "global", "str", "num", "bool", "date"]);
-    $("#konecty-search-from-" + index ).datepicker();
-    $("#konecty-search-to-" + index ).datepicker();
-    // time inputs
-    let minutes_interval = 15;
-    let minutes_in_day = 24 * 60;
-    let startOfDay = moment().endOf('day').subtract(minutes_interval-1, 'minutes'); // 00:00
-    let times = [];
-    for (let i=0, j=minutes_in_day/minutes_interval; i<j; i++) {
-      let time = startOfDay.add(minutes_interval, 'minutes').format('HH:mm');
-      $("#konecty-search-fromTime-" + index ).append($("<option></option>").attr("value", time).text(time));
-      $("#konecty-search-toTime-" + index ).append($("<option></option>").attr("value", time).text(time));
-    }
+    $("#konecty-search-value1-" + index).typedInput();
+    $("#konecty-search-value2-" + index).typedInput();
+    let types = ["msg", "flow", "global", "str", "num", "bool", "date"];
+    $("#konecty-search-value1-" + index).typedInput("types", types);
+    $("#konecty-search-value2-" + index).typedInput("types", types);
   }
 
   // changes operators based on field type
   function onChangeTerm(event, index) {
     let fieldType = $("#konecty-search-term-" + index + " option:selected").data("type");
     let operators = operatorsByType[fieldType].map(function (o){return {label: t_operators('pt_BR')[o], value: o}});
-    $("#konecty-search-value-wrapper-" + index).hide();
-    $("#konecty-search-operator-"+ index).html("<option></option>");
+    $("#konecty-search-wrapper-operator-" + index).show();
+    $("#konecty-search-wrapper-value-" + index).hide();
+    $("#konecty-search-operator-"+ index).html("<option selected></option>");
     $.each(operators, function(idx, op) {
       $("#konecty-search-operator-"+ index).append($("<option></option>").attr("value", op.value).text(op.label));
     });
-    onChangeOperator(event, index);
+    onChangeOperator(null, index);
   }
 
   function onChangeOperator(event, index) {
-    let op = event.target.value;
-    let typedInput = $("#konecty-search-value-" + index).closest(".red-ui-typedInput-container");
-    let lookupValue = $("#konecty-search-lookupValue-" + index);
-    let period = $("#konecty-search-period-" + index);
-    $("#konecty-search-value-wrapper-" + index).show();
-    typedInput.hide(); lookupValue.hide(); period.hide();
-    if (op == "lookup") lookupDocument(index);
-    else if (op === "between") period.show();
-    else if (op !== "exists") typedInput.show();
+    if (event) {
+      let op = event.target.value;
+      if (op == "" || op === "exists") {
+        $("#konecty-search-wrapper-value-" + index).hide();
+      } else {
+        $("#konecty-search-wrapper-value-" + index).show();
+        let typedInput1 = $("#konecty-search-value1-" + index).closest(".red-ui-typedInput-container");
+        let typedInput2 = $("#konecty-search-value2-" + index).closest(".red-ui-typedInput-container");
+        let lookupValue = $("#konecty-search-lookupValue-" + index);
+        typedInput1.hide(); typedInput2.hide(); lookupValue.hide();
+        if (op == "lookup") lookupDocument(index);
+        else if (op === "between") typedInput1.show() && typedInput2.show();
+        else typedInput1.show();
+      }
+    }
   }
 
   function lookupDocument(index) {
@@ -225,23 +216,25 @@
       $("#node-input-rule-container").editableList('addItem', kondata);
       setTimeout(function () {
         $("#konecty-search-term-" + idx).val(condition.term).change();
-        let typedInput = $("#konecty-search-value-" + idx).closest(".red-ui-typedInput-container");
-        let lookup = $("#konecty-search-lookupValue-" + idx);
-        let period = $("#konecty-search-period-" + idx);
-        lookup.val(condition.lookupValue);
-        $("#konecty-search-value-" + idx).typedInput("value", condition.value).typedInput("type", condition.type);
+        $("#konecty-search-value1-" + idx).typedInput("value", condition.value1).typedInput("type", condition.value1Type);
+        $("#konecty-search-value2-" + idx).typedInput("value", condition.value2).typedInput("type", condition.value2Type);
         $("#konecty-search-operator-" + idx).val(condition.operator);
-        $("#konecty-search-lookupId-" + idx).val(condition.lookupId);
-        $("#konecty-search-type-" + idx).val(condition.valueType);
-        $("#konecty-search-from-" + idx).val(condition.from);
-        $("#konecty-search-to-" + idx).val(condition.to);
-        $("#konecty-search-fromTime-" + idx).val(condition.fromTime);
-        $("#konecty-search-toTime-" + idx).val(condition.toTime);
+        let op = condition.operator;
         // visibility
-        typedInput.hide(); lookup.hide(); period.hide();
-        if (condition.operator === "lookup") lookupDocument(idx);
-        else if (condition.operator === "between") period.show();
-        else if (condition.operator !== "exists") typedInput.show();
+        if (op == "" || op === "exists") {
+          $("#konecty-search-wrapper-value-" + idx).hide();
+        } else {
+          $("#konecty-search-wrapper-value-" + idx).show();
+          $("#konecty-search-lookupId-" + idx).val(condition.lookupId);
+          let lookup = $("#konecty-search-lookupValue-" + idx);
+          let typedInput1 = $("#konecty-search-value1-" + idx).closest(".red-ui-typedInput-container");
+          let typedInput2 = $("#konecty-search-value2-" + idx).closest(".red-ui-typedInput-container");
+          lookup.val(condition.lookupValue);
+          typedInput1.hide(); typedInput2.hide(); lookup.hide();
+          if (op === "lookup") lookupDocument(idx);
+          else if (op === "between") typedInput1.show() && typedInput2.show();
+          else typedInput1.show();
+        }
       }, 10);
     });
   }
@@ -263,32 +256,18 @@
   // stores konecty filter to search api
   function saveKonectyFilter() {
     let search_terms = $(".konecty-search-term");
-    let search_operators = $(".konecty-search-operator");
-    let search_types = $(".konecty-search-type");
-    let search_values = $(".konecty-search-value");
     let conditions = [];
     for (let i=0, j=search_terms.length; i < j; i++) {
-      let fieldType = $("#konecty-search-term-"+ i +" option:selected").data("type");
-      let valueType = $("#konecty-search-value-"+i).typedInput('type');
-      let value = $("#konecty-search-value-"+i).typedInput('value');
-      let lookupId = $("#konecty-search-lookupId-"+i).val();
-      let lookupValue = $("#konecty-search-lookupValue-"+i).val();
-      let from = $("#konecty-search-from-"+i).val();
-      let to = $("#konecty-search-to-"+i).val();
-      let fromTime = $("#konecty-search-fromTime-"+i).val();
-      let toTime = $("#konecty-search-toTime-"+i).val();
       conditions.push({
         term: search_terms[i].value,
-        operator: search_operators[i].value,
-        valueType: valueType,
-        fieldType: fieldType,
-        value: value,
-        lookupId: lookupId,
-        lookupValue: lookupValue,
-        from: from,
-        to: to,
-        fromTime: fromTime,
-        toTime: toTime
+        fieldType: $("#konecty-search-term-"+ i +" option:selected").data("type"),
+        operator: $("#konecty-search-operator-"+i).val(),
+        value1: $("#konecty-search-value1-"+i).typedInput('value'),
+        value2: $("#konecty-search-value2-"+i).typedInput('value'),
+        value1Type: $("#konecty-search-value1-"+i).typedInput('type'),
+        value2Type: $("#konecty-search-value2-"+i).typedInput('type'),
+        lookupId: $("#konecty-search-lookupId-"+i).val(),
+        lookupValue: $("#konecty-search-lookupValue-"+i).val()
       });
     }
     $("#node-input-filter").val(JSON.stringify({match: 'and', conditions: conditions}));
