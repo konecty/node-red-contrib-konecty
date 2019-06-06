@@ -64,7 +64,8 @@ module.exports = function (RED) {
       })
       .then(function (response) {
         node.status({});
-        msg.payload = response.data;
+        msg.success = response.data.success;
+        msg.payload = response.data.data;
         node.send(msg);
       })
       .catch(function (error) {
