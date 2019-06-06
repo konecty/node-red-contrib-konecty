@@ -20,7 +20,7 @@ module.exports = function (RED) {
       let filter = JSON.parse(config.filter);
       for (let i=0, j=filter.conditions.length; i<j; i++) {
         let ff = filter.conditions[i];
-        let type = filter.conditions[i].type;
+        let valueType = filter.conditions[i].valueType;
         if (ff.operator === "lookup") {
           ff.term += "._id";
           ff.operator = "equals";
@@ -33,12 +33,12 @@ module.exports = function (RED) {
           if (ff.to) {
             ff.value["less_or_equals"] = {"$date": moment(ff.to + " " + ff.toTime, "MM/DD/YYYY HH:mm").format() };
           }
-        } else if (type === "msg") ff.value = msg[ff.value];
-        else if (type === "flow") ff.value = flow.get(ff.value);
-        else if (type === "global") ff.value = global.get(ff.value);
-        else if (type === "num") ff.value = Number(ff.value);
-        else if (type === "bool" && ff.value === "true") ff.value = true;
-        else if (type === "bool" && ff.value === "false") ff.value = false;
+        } else if (valueType === "msg") ff.value = msg[ff.value];
+        else if (valueType === "flow") ff.value = flow.get(ff.value);
+        else if (valueType === "global") ff.value = global.get(ff.value);
+        else if (valueType === "num") ff.value = Number(ff.value);
+        else if (valueType === "bool" && ff.value === "true") ff.value = true;
+        else if (valueType === "bool" && ff.value === "false") ff.value = false;
       }
 
       let root_url = node.credentials.url.trim();

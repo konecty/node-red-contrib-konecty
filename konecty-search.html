@@ -61,8 +61,9 @@
   	'phone.phoneNumber': ['exists', 'equals', 'not_equals', 'in', 'not_in', 'contains', 'not_contains', 'starts_with', 'end_with'],
   	'phone.countryCode': ['exists', 'equals', 'not_equals', 'in', 'not_in'],
   	picklist: ['exists', 'equals', 'not_equals', 'in', 'not_in'],
-  	lookup: ['exists'],
+  	lookup: ['exists', 'lookup'],
   	'lookup._id': ['exists', 'equals', 'not_equals', 'in', 'not_in'],
+    inheritLookup: ['exists', 'lookup'],
   	ObjectId: ['exists', 'equals', 'not_equals', 'in', 'not_in'],
   	encrypted: ['exists', 'equals', 'not_equals'],
   	filter: ['exists'],
@@ -100,16 +101,18 @@
             </select>
           </td>
           <td style="width:45%;">
-            <input id="konecty-search-type-`+ index +`" class="konecty-search-type" type="hidden"></input>
-            <input id="konecty-search-value-`+ index +`" class="konecty-search-value" type="text" style="width:100%;"></input>
-            <input id="konecty-search-lookupId-`+ index +`" class="konecty-search-lookupId" type="hidden"></input>
-            <input id="konecty-search-lookupValue-`+ index +`" class="konecty-search-lookupValue" type="text" style="width:100%; display:none;"></input>
-            <div id="konecty-search-period-`+ index +`" style="display:none; width:100%;">
-              <input id="konecty-search-from-`+ index +`" class="konecty-search-from" type="text" style="width:60%"></input>
-              <select id="konecty-search-fromTime-`+ index +`" class="konecty-search-fromTime" style="width:37%" name=""></select>
-              <br>
-              <input id="konecty-search-to-`+ index +`" class="konecty-search-to" type="text" style="width:60%"></input>
-              <select id="konecty-search-toTime-`+ index +`" class="konecty-search-toTime" style="width:37%" name=""></select>
+            <div id="konecty-search-value-wrapper-`+ index +`" style="display:none;">
+              <input id="konecty-search-type-`+ index +`" class="konecty-search-type" type="hidden"></input>
+              <input id="konecty-search-value-`+ index +`" class="konecty-search-value" type="text" style="width:100%;"></input>
+              <input id="konecty-search-lookupId-`+ index +`" class="konecty-search-lookupId" type="hidden"></input>
+              <input id="konecty-search-lookupValue-`+ index +`" class="konecty-search-lookupValue" type="text" style="width:100%; display:none;"></input>
+              <div id="konecty-search-period-`+ index +`" style="display:none; width:100%;">
+                <input id="konecty-search-from-`+ index +`" class="konecty-search-from" type="text" style="width:60%"></input>
+                <select id="konecty-search-fromTime-`+ index +`" class="konecty-search-fromTime" style="width:37%" name=""></select>
+                <br>
+                <input id="konecty-search-to-`+ index +`" class="konecty-search-to" type="text" style="width:60%"></input>
+                <select id="konecty-search-toTime-`+ index +`" class="konecty-search-toTime" style="width:37%" name=""></select>
+              </div>
             </div>
           </td>
         </tr>
@@ -117,10 +120,10 @@
     `);
     let doc = $("#node-input-doc").val();
     let fields = kondata[doc] ? kondata[doc]['fields'] : [];
-    let ff = fields.map(f => {return {value: f.name, label: f.label.pt_BR} });
+    let ff = fields.map(f => {return {type: f.type, value: f.name, label: f.label.pt_BR} });
     ff = sortArrayByAttribute(ff, "label");
     for (f of ff) {
-      $("#konecty-search-term-" + index ).append($("<option></option>").attr("value", f.value).text(f.label));
+      $("#konecty-search-term-" + index ).append($("<option></option>").attr("value", f.value).attr("data-type", f.type).text(f.label));
     }
     $(".konecty-search-value").typedInput();
     $(".konecty-search-value").typedInput("types", ["msg", "flow", "global", "str", "num", "bool", "date"]);
@@ -140,9 +143,10 @@
 
   // changes operators based on field type
   function onChangeTerm(event, index) {
-    // TODO: 'any' is hardcoded yet
-    let operators = operatorsByType['any'].map(function (o){return {label: t_operators('pt_BR')[o], value: o}});
-    $("#konecty-search-operator-"+ index).html("");
+    let fieldType = $("#konecty-search-term-" + index + " option:selected").data("type");
+    let operators = operatorsByType[fieldType].map(function (o){return {label: t_operators('pt_BR')[o], value: o}});
+    $("#konecty-search-value-wrapper-" + index).hide();
+    $("#konecty-search-operator-"+ index).html("<option></option>");
     $.each(operators, function(idx, op) {
       $("#konecty-search-operator-"+ index).append($("<option></option>").attr("value", op.value).text(op.label));
     });
@@ -154,6 +158,7 @@
     let typedInput = $("#konecty-search-value-" + index).closest(".red-ui-typedInput-container");
     let lookupValue = $("#konecty-search-lookupValue-" + index);
     let period = $("#konecty-search-period-" + index);
+    $("#konecty-search-value-wrapper-" + index).show();
     typedInput.hide(); lookupValue.hide(); period.hide();
     if (op == "lookup") lookupDocument(index);
     else if (op === "between") period.show();
@@ -227,7 +232,7 @@
         $("#konecty-search-value-" + idx).typedInput("value", condition.value).typedInput("type", condition.type);
         $("#konecty-search-operator-" + idx).val(condition.operator);
         $("#konecty-search-lookupId-" + idx).val(condition.lookupId);
-        $("#konecty-search-type-" + idx).val(condition.type);
+        $("#konecty-search-type-" + idx).val(condition.valueType);
         $("#konecty-search-from-" + idx).val(condition.from);
         $("#konecty-search-to-" + idx).val(condition.to);
         $("#konecty-search-fromTime-" + idx).val(condition.fromTime);
@@ -263,7 +268,8 @@
     let search_values = $(".konecty-search-value");
     let conditions = [];
     for (let i=0, j=search_terms.length; i < j; i++) {
-      let type = $("#konecty-search-value-"+i).typedInput('type');
+      let fieldType = $("#konecty-search-term-"+ i +" option:selected").data("type");
+      let valueType = $("#konecty-search-value-"+i).typedInput('type');
       let value = $("#konecty-search-value-"+i).typedInput('value');
       let lookupId = $("#konecty-search-lookupId-"+i).val();
       let lookupValue = $("#konecty-search-lookupValue-"+i).val();
@@ -274,7 +280,8 @@
       conditions.push({
         term: search_terms[i].value,
         operator: search_operators[i].value,
-        type: type,
+        valueType: valueType,
+        fieldType: fieldType,
         value: value,
         lookupId: lookupId,
         lookupValue: lookupValue,
