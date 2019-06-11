@@ -101,8 +101,12 @@
             </select>
           </td>
           <td id="konecty-search-wrapper-value-`+ index +`" style="width:50%; display:none;">
-            <input id="konecty-search-value1-`+ index +`" class="konecty-search-value1" type="text" style="width:100%;"></input>
-            <input id="konecty-search-value2-`+ index +`" class="konecty-search-value2" type="text" style="width:100%;"></input>
+            <div id="typed-input-wrapper-value1-`+ index +`">
+              <input id="konecty-search-value1-`+ index +`" class="konecty-search-value1" type="text" style="width:100%;"></input>
+            </div>
+            <div id="typed-input-wrapper-value2-`+ index +`">
+              <input id="konecty-search-value2-`+ index +`" class="konecty-search-value2" type="text" style="width:100%;"></input>
+            </div>
             <input id="konecty-search-value1-type-`+ index +`" class="konecty-search-value1-type" type="hidden"></input>
             <input id="konecty-search-value2-type-`+ index +`" class="konecty-search-value2-type" type="hidden"></input>
             <input id="konecty-search-lookupId-`+ index +`" class="konecty-search-lookupId" type="hidden"></input>
@@ -145,13 +149,13 @@
         $("#konecty-search-wrapper-value-" + index).hide();
       } else {
         $("#konecty-search-wrapper-value-" + index).show();
-        let typedInput1 = $("#konecty-search-value1-" + index).closest(".red-ui-typedInput-container");
-        let typedInput2 = $("#konecty-search-value2-" + index).closest(".red-ui-typedInput-container");
+        let typedInput1Wrapper = $("#typed-input-wrapper-value1-" + index);
+        let typedInput2Wrapper = $("#typed-input-wrapper-value2-" + index);
         let lookupValue = $("#konecty-search-lookupValue-" + index);
-        typedInput1.hide(); typedInput2.hide(); lookupValue.hide();
+        typedInput1Wrapper.hide(); typedInput2Wrapper.hide(); lookupValue.hide();
         if (op == "lookup") lookupDocument(index);
-        else if (op === "between") typedInput1.show() && typedInput2.show();
-        else typedInput1.show();
+        else if (op === "between") typedInput1Wrapper.show() && typedInput2Wrapper.show();
+        else typedInput1Wrapper.show();
       }
     }
   }
@@ -227,12 +231,12 @@
           $("#konecty-search-wrapper-value-" + idx).show();
           $("#konecty-search-lookupId-" + idx).val(condition.lookupId);
           let lookup = $("#konecty-search-lookupValue-" + idx);
-          let typedInput1 = $("#konecty-search-value1-" + idx).closest(".red-ui-typedInput-container");
-          let typedInput2 = $("#konecty-search-value2-" + idx).closest(".red-ui-typedInput-container");
+          let typedInput1Wrapper = $("#typed-input-wrapper-value1-" + idx);
+          let typedInput2Wrapper = $("#typed-input-wrapper-value2-" + idx);
           lookup.val(condition.lookupValue);
-          typedInput1.hide(); typedInput2.hide(); lookup.hide();
+          typedInput1Wrapper.hide(); typedInput2Wrapper.hide(); lookup.hide();
           if (op === "lookup") lookupDocument(idx);
-          else if (op === "between") typedInput1.show() && typedInput2.show();
+          else if (op === "between") typedInput1Wrapper.show() && typedInput2Wrapper.show();
           else typedInput1.show();
         }
       }, 10);
