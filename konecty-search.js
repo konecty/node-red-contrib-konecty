@@ -59,7 +59,8 @@ module.exports = function (RED) {
       });
       axios.get('/rest/data/'+ (config.doc.split(':')[1]) +'/find', {
         params: {
-          filter: JSON.stringify(filter)
+          filter: JSON.stringify(filter),
+          limit: 0
         }
       })
       .then(function (response) {
