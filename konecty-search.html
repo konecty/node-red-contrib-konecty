@@ -27,7 +27,7 @@
 </script>
 
 <script type="text/x-red" data-help-name="konecty-search">
-  <p>A full featured search node for Konecty CRM entities.</p>
+  <p>A full featured search node for Konecty CRM documents.</p>
   <p>For the first time, you need to fill data, click save and then reopen node to be able to add filters.</p>
   <p>Use "YYYY-MM-DD" and "YYYY-MM-DD HH:MM" formats for <em>date</em> and <em>datetime</em> filters.</p>
 </script>
@@ -115,12 +115,27 @@
         </tr>
       </table>
     `);
+    console.log(kondata);
     let doc = $("#node-input-doc").val();
+    let termSelect = $("#konecty-search-term-" + index );
     let fields = kondata[doc] ? kondata[doc]['fields'] : [];
     let ff = fields.map(f => {return {type: f.type, value: f.name, label: f.label.pt_BR} });
     ff = sortArrayByAttribute(ff, "label");
     for (f of ff) {
-      $("#konecty-search-term-" + index ).append($("<option></option>").attr("value", f.value).attr("data-type", f.type).text(f.label));
+      if (f.type == "address") {
+        termSelect.append($("<option></option>").attr("value", 'address.country').attr("data-type", 'address.country').text('Endereço > País'));
+        termSelect.append($("<option></option>").attr("value", 'address.city').attr("data-type", 'address.city').text('Endereço > Cidade'));
+        termSelect.append($("<option></option>").attr("value", 'address.state').attr("data-type", 'address.state').text('Endereço > UF'));
+        termSelect.append($("<option></option>").attr("value", 'address.district').attr("data-type", 'address.district').text('Endereço > Cidade'));
+        termSelect.append($("<option></option>").attr("value", 'address.place').attr("data-type", 'address.place').text('Endereço > Logradouro'));
+        termSelect.append($("<option></option>").attr("value", 'address.number').attr("data-type", 'address.number').text('Endereço > Número'));
+        termSelect.append($("<option></option>").attr("value", 'address.postalCode').attr("data-type", 'address.postalCode').text('Endereço > CEP'));
+        termSelect.append($("<option></option>").attr("value", 'address.complement').attr("data-type", 'address.complement').text('Endereço > Complemento'));
+        termSelect.append($("<option></option>").attr("value", 'address.geolocation.0').attr("data-type", 'address.geolocation.0').text('Endereço > Geolocalização 1'));
+        termSelect.append($("<option></option>").attr("value", 'address.geolocation.1').attr("data-type", 'address.geolocation.1').text('Endereço > Geolocalização 2'));
+      } else {
+        termSelect.append($("<option></option>").attr("value", f.value).attr("data-type", f.type).text(f.label));
+      }
     }
     $("#konecty-search-value1-" + index).typedInput();
     $("#konecty-search-value2-" + index).typedInput();
@@ -164,7 +179,7 @@
     let doc = $("#node-input-doc").val();
     let term = $("#konecty-search-term-" + index).val();
     let credentials = getCredentials();
-    let searchUrl = credentials.root_url + "/rest/data/" + (doc.split(':')[1]) + "/lookup/" + term + "?page=1&start=0&limit=100&search=";
+    let searchUrl = credentials.root_url + "/rest/data/" + (doc.split(':')[1]) + "/lookup/" + term + "?page=1&start=0&limit=10000&search=";
     $("#konecty-search-lookupValue-" + index).show();
     $("#konecty-search-lookupValue-" + index).autocomplete({
       source: function (request, response) {
