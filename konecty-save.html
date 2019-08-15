@@ -1,0 +1,728 @@
+<script type="text/x-red" data-template-name="konecty-save">
+	<!--31-->
+		<div class="form-row">
+				<label for="node-input-server"><i class="fa fa-globe"></i> Konecty</label>
+				<input type="text" id="node-input-server" placeholder="Konecty Server">
+		</div>
+		<div class="form-row">
+				<label for="node-input-name"><i class="fa fa-tag"></i>  <span data-i18n="konecty-save.label.name"></span></label>
+				<input type="text" id="node-input-name" placeholder="Name">
+		</div>
+		<div class="form-row">
+				<label for="node-input-document"><i class="fa fa-file"></i> <span data-i18n="konecty-save.label.document"></span></label>
+				<select id="node-input-document" style="width:70%">
+				</select>
+		</div>
+		<div class="form-row">
+			<label for="node-input-action"><i class="fa fa-file"></i> <span data-i18n="konecty-save.label.action"></span></label>
+			<select id="node-input-action" style="width:70%">
+					<option value="create" data-i18n="konecty-save.actions.create"></option>
+					<option value="update" data-i18n="konecty-save.actions.update"></option>
+			</select>
+	</div>
+		<div class="form-row node-input-code-container-row">
+				<input type="hidden" id="node-input-ids">
+				<label for="node-input-code-container"><i class="fa fa-file-text"></i> <span data-i18n="konecty-save.label.ids"></span></label>
+				<ol id="node-input-code-container"></ol>
+		</div>
+
+		<div class="form-row node-input-field-container-row">
+				<input type="hidden" id="node-input-data">
+				<label for="node-input-field-container"><i class="fa fa-file-text"></i> <span data-i18n="konecty-save.label.data"></span></label>
+				<ol id="node-input-field-container"></ol>
+		</div>
+</script>
+
+<script type="text/x-red" data-help-name="konecty-save">
+	<p>Node to save data to your Konecty Platform Instance</p>
+	<ul>
+		<li> Payload properties: array of objects with these properties:
+			<ul>
+				<li>n</li>
+				<li>t</li>
+				<li>vt</li>
+				<li>v</li>
+			</ul>
+		</li>
+		<li> Email type must be JSON as value with the follow properties:
+			<ul>
+				<li>type</li>
+				<li>address</li>
+			</ul>
+		</li>
+		<li> Date and Datetime types must be a <a href="http://www.ecma-international.org/ecma-262/5.1/#sec-15.9.1.15" target="_blank">ISO 8601</a> string. </li>
+		<li>To send a list of objects to be impacted for the update, You may send an array on msg.ids. Each entry must be constains the follow properties:
+				<ul>
+						<li>vt: 'code' or 'id'</li>
+						<li>v: code or id of the object</li>
+					</ul>
+				</li>
+	</ul>
+</script>
+
+<script type="text/javascript">
+	function createSubField(node, group, name, container, fieldData) {
+		var id = 'node-input-field-' + group + '-' + name + '-' + RED.nodes.id();
+		var className = 'node-input-field-' + name;
+
+		var formRow = $('<div />', { class: 'form-row' })
+			.append($('<label />', { for: id }).append($('<span />').text(node._('konecty-save.' + group + '.' + name))))
+			.appendTo(container);
+		var control = $('<input />', {
+			id: id,
+			class: className,
+			type: 'text',
+			placeholder: node._('konecty-save.' + group + '.' + name),
+			style: 'width: calc(100% - 105px)'
+		}).appendTo(formRow);
+
+		control.typedInput({
+			default: 'str',
+			types: ['msg', 'flow', 'global', 'env', 'str']
+		});
+		if (fieldData && fieldData.v) {
+			var v = fieldData.v[name];
+			if (v != null) {
+				control.typedInput('type', v.vt);
+				control.typedInput('value', v.v);
+			}
+		}
+	}
+
+	function getLabel(field) {
+		var language = navigator.language || 'en';
+		if (language === 'pt-BR') {
+			return field.label.pt_BR;
+		}
+		return field.label.en;
+	}
+
+	function buildFieldList(node) {
+		node.editors = {};
+		$('.node-input-field-container-row').show();
+		$('#node-input-field-container')
+			.css('min-height', '350px')
+			.css('min-width', '450px')
+			.editableList({
+				addItem(container, rowIndex, fieldData) {
+					container.css({
+						overflow: 'hidden',
+						whiteSpace: 'nowrap'
+					});
+
+					var row = $('<div/>').appendTo(container);
+					var row2 = $('<div/>', { style: 'padding-top: 10px; padding-left: 5px;' }).appendTo(container);
+					var selectField = $('<select/>', {
+						class: 'node-input-field-id',
+						style: 'width:180px; margin-left: 5px; text-align: center;'
+					}).appendTo(row);
+					var group0 = $('<optgroup/>', { label: node.document + ' fields' }).appendTo(selectField);
+					(node.fields || []).forEach(field => {
+						if (!['autoNumber', 'inheritLookup', 'filter', 'file'].includes(field.type)) {
+							group0.append(
+								$('<option></option>')
+									.val(field.name)
+									.text(getLabel(field))
+							);
+						}
+					});
+
+					row2.hide();
+					var types = ['msg', 'flow', 'global', 'env'];
+
+					selectField
+						.change(function() {
+							var fName = $(this).val();
+							$('.node-input-field-id ~ *', row).remove();
+							if (node.editors['editor-' + rowIndex]) {
+								node.editors['editor-' + rowIndex].destroy();
+								delete node.editors['editor-' + rowIndex];
+							}
+							row2.hide().empty();
+
+							var style = 'width: calc(100% - 190px); margin-left: 5px;';
+
+							if (fName) {
+								var field = node.fields.find(f => f.name === fName);
+
+								if (field) {
+									var fieldClassName = 'node-input-field-value';
+									var formClassName = 'node-input-field-form';
+									$('<input/>', { class: 'node-input-field-type', type: 'hidden' })
+										.appendTo(row)
+										.val(field.type);
+
+									switch (field.type) {
+										case 'text':
+										case 'url':
+										case 'encrypted':
+										case 'ObjectId':
+										case 'date':
+										case 'dateTime':
+											$('<input/>', { class: fieldClassName, type: 'text', style: style })
+												.appendTo(row)
+												.typedInput({
+													default: 'msg',
+													types: ['msg', 'flow', 'global', 'str', 'env']
+												});
+											break;
+										case 'email':
+											var typeOptions = Object.keys(field.typeOptions) || [];
+
+											var newTypes = typeOptions.map(function(t) {
+												return {
+													value: t,
+													label: getLabel({ label: field.typeOptions[t] }),
+													validate: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/
+												};
+											});
+
+											$('<input/>', { class: fieldClassName, type: 'text', style: style })
+												.appendTo(row)
+												.typedInput({
+													default: 'msg',
+													types: types.concat(newTypes)
+												});
+											break;
+										case 'percentage':
+										case 'number':
+											$('<input/>', { class: fieldClassName, type: 'text', style: style })
+												.appendTo(row)
+												.typedInput({
+													default: 'msg',
+													types: ['msg', 'flow', 'global', 'num', 'env']
+												});
+											break;
+										case 'money':
+											$('<input/>', { class: fieldClassName, type: 'text', style: style })
+												.appendTo(row)
+												.typedInput({
+													default: 'msg',
+													types: types.concat([
+														{
+															value: 'BRL',
+															label: 'BRL',
+															validate: /^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/
+														},
+														{
+															value: 'USD',
+															label: 'USD',
+															validate: /^[+-]?[0-9]*\.?[0-9]*([eE][-+]?[0-9]+)?$/
+														}
+													])
+												});
+											break;
+										case 'boolean':
+											$('<input/>', { class: fieldClassName, type: 'text', style: style })
+												.appendTo(row)
+												.typedInput({
+													default: 'msg',
+													types: ['msg', 'flow', 'global', 'bool', 'env']
+												});
+											break;
+										case 'address':
+											var subForm = buildSubFormBox(node, row2, 'konecty-save.address.title', 'fa-map-marker', formClassName);
+
+											[
+												'country',
+												'postalCode',
+												'state',
+												'city',
+												'place',
+												'number',
+												'district',
+												'placeType',
+												'complement',
+												'type'
+											].forEach(function(fieldName) {
+												createSubField(node, 'address', fieldName, subForm, fieldData);
+											});
+
+											$('<input/>', {
+												class: fieldClassName,
+												type: 'text',
+												style: style
+											})
+												.appendTo(row)
+												.typedInput({
+													default: 'msg',
+													types: [
+														'msg',
+														'flow',
+														'global',
+														'env',
+														{
+															value: 'form',
+															label: node._('konecty-save.label.form'),
+															hasValue: false
+														}
+													]
+												})
+												.change(function() {
+													var type = $(this).typedInput('type');
+													if (type === 'form') {
+														row2.show();
+													} else {
+														row2.hide();
+													}
+												});
+											break;
+										case 'personName':
+											var subFormName = buildSubFormBox(node, row2, 'konecty-save.name.title', 'fa-id-card', formClassName);
+											['first', 'last', 'full'].forEach(function(fieldName) {
+												createSubField(node, 'name', fieldName, subFormName, fieldData);
+											});
+
+											$('<input/>', {
+												class: fieldClassName,
+												type: 'text',
+												style: style
+											})
+												.appendTo(row)
+												.typedInput({
+													default: 'msg',
+													types: [
+														'msg',
+														'flow',
+														'global',
+														'env',
+														{
+															value: 'form',
+															label: node._('konecty-save.label.form'),
+															hasValue: false
+														}
+													]
+												})
+												.change(function() {
+													var type = $(this).typedInput('type');
+													if (type === 'form') {
+														row2.show();
+													} else {
+														row2.hide();
+													}
+												});
+											break;
+										case 'picklist':
+											$('<input/>', {
+												class: fieldClassName,
+												type: 'text',
+												style: style
+											})
+												.appendTo(row)
+												.typedInput({
+													default: 'msg',
+													types:
+														field.maxSelected > 1
+															? types.concat('json')
+															: types.concat({
+																	value: 'option',
+																	label: 'opt',
+																	options: Object.keys(field.options)
+															  })
+												});
+											break;
+										case 'lookup':
+											const server = $('#node-input-server').val();
+											const document = $('#node-input-document').val();
+
+											$('<div />', { class: 'form-row' })
+												.append($('<input />', { class: 'node-input-field-selected', type: 'hidden' }))
+												.append(
+													$('<input />', {
+														type: 'text',
+														class: 'node-input-field-autocomplete',
+														style: 'width:100%;'
+													}).autocomplete({
+														source: function(request, response) {
+															'/konecty-server/:id/lookup/:document/:field/:search';
+															$.ajax({
+																url: 'konecty-server/' + server + '/lookup/' + document + '/' + field.name + '/' + request.term,
+																type: 'GET',
+																dataType: 'json',
+																success: options => {
+																	response((options || []).map(opt => ({ id: opt._id, value: opt.name })));
+																}
+															});
+														},
+														minLength: 2,
+														select: function(event, ui) {
+															$('.node-input-field-selected', row2).val(ui.item.id);
+														}
+													})
+												)
+												.appendTo(row2);
+
+											$('<input/>', {
+												class: fieldClassName,
+												type: 'text',
+												style: style
+											})
+												.appendTo(row)
+												.typedInput({
+													default: 'msg',
+													types: [
+														'msg',
+														'flow',
+														'global',
+														'env',
+														{
+															value: 'form',
+															label: node._('konecty-save.label.autocomplete'),
+															hasValue: false
+														}
+													]
+												})
+												.change(function() {
+													var type = $(this).typedInput('type');
+													if (type === 'form') {
+														if (fieldData && fieldData.v) {
+															$('.node-input-field-selected', row2).val(fieldData.v.i);
+															$('.node-input-field-autocomplete', row2).val(fieldData.v.l);
+														}
+														row2.show();
+													} else {
+														row2.hide();
+													}
+												});
+											break;
+										case 'richText':
+											var editorEl = $('<div />', {
+												class: 'node-text-editor node-input-field-editor',
+												style: 'height: 150px; min-height:150px;padding-bottom:5px;'
+											}).appendTo(row2);
+
+											$('<input />', { class: 'node-input-field-editor-index', type: 'hidden' })
+												.val('editor-' + rowIndex)
+												.appendTo(row2);
+
+											node.editors['editor-' + rowIndex] = RED.editor.createEditor({
+												element: editorEl,
+												mode: 'ace/mode/handlebars',
+												value: fieldData && fieldData.v ? fieldData.v : ''
+											});
+
+											$('<input/>', {
+												class: fieldClassName,
+												type: 'text',
+												style: style
+											})
+												.appendTo(row)
+												.typedInput({
+													default: 'msg',
+													types: [
+														'msg',
+														'flow',
+														'global',
+														'env',
+														{
+															value: 'form',
+															label: node._('konecty-save.label.editor'),
+															hasValue: false
+														}
+													]
+												})
+												.change(function() {
+													var type = $(this).typedInput('type');
+													if (type === 'form') {
+														row2.show();
+													} else {
+														row2.hide();
+													}
+												});
+
+											break;
+									}
+									if (fieldData != null) {
+										var fieldInput = $('.' + fieldClassName, container);
+										fieldInput.typedInput('type', fieldData.vt);
+										if (fieldData.vt === 'form') {
+										} else {
+											fieldInput.typedInput('value', fieldData.v);
+										}
+									}
+								}
+							}
+						})
+						.val(null);
+
+					if (fieldData != null) {
+						$('.node-input-field-id', container)
+							.val(fieldData.n)
+							.change();
+					}
+				},
+				sortable: true,
+				removable: true
+			});
+	}
+
+	function buildSubFormBox(node, container, title, icon, className) {
+		$('<div />', { class: 'form-row ' })
+			.append($('<i />', { class: 'fa ' + icon }))
+			.append('&nbsp;')
+			.append($('<span />').text(node._(title)))
+			.appendTo(container);
+
+		var subForm = $('<div />', {
+			class: className,
+			style: 'border: 1px solid #ccc;border-radius: 4px;padding: 5px;margin: 0;'
+		}).appendTo(container);
+		return subForm;
+	}
+
+	function processForm(container) {
+		var form = container.find('.node-input-field-form');
+		var result = {};
+		form.find('input').each(function() {
+			var inputEl = $(this);
+			var className = inputEl.attr('class');
+			if (/.*node-input-field-.*/.test(className)) {
+				var arr = className.split(/(.*)(node-input-field-)([^ ]+)(.*)/);
+				var subFieldName = arr[3];
+				var inputValue = inputEl.typedInput('value');
+				if (inputValue != null && inputValue.length > 0) {
+					result[subFieldName] = {
+						vt: inputEl.typedInput('type'),
+						v: inputEl.typedInput('value')
+					};
+				}
+			}
+		});
+		return result;
+	}
+
+	function oneditsave() {
+		var node = this;
+		var idRows = $('#node-input-code-container').editableList('items');
+		var dataRows = $('#node-input-field-container').editableList('items');
+
+		var ids = [];
+
+		idRows.each(function() {
+			var row = $(this);
+			var codeInput = row.find('.node-input-code-value');
+			ids.push({
+				v: codeInput.typedInput('value'),
+				vt: codeInput.typedInput('type')
+			});
+		});
+
+		$('#node-input-ids').val(JSON.stringify(ids));
+
+		var data = [];
+
+		dataRows.each(function() {
+			var dataRow = $(this);
+			var fieldName = $('.node-input-field-id', dataRow).val();
+			var fieldType = $('.node-input-field-type', dataRow).val();
+
+			var valueInput = dataRow.find('.node-input-field-value');
+			var valueType = valueInput.typedInput('type');
+			var valueValue = valueInput.typedInput('value');
+
+			if (valueType === 'form') {
+				switch (fieldType) {
+					case 'personName':
+					case 'address':
+						valueValue = processForm(dataRow);
+						break;
+					case 'lookup':
+						valueValue = {
+							i: dataRow.find('.node-input-field-selected').val(),
+							l: dataRow.find('.node-input-field-autocomplete').val()
+						};
+						break;
+					case 'richText':
+						var editorIndex = dataRow.find('.node-input-field-editor-index').val();
+						var editor = node.editors[editorIndex];
+						valueValue = editor.getValue();
+						editor.destroy();
+						delete node.editors[editorIndex];
+						break;
+				}
+			}
+
+			data.push({
+				n: fieldName,
+				t: fieldType,
+				vt: valueType,
+				v: valueValue
+			});
+		});
+
+		$('#node-input-data').val(JSON.stringify(data));
+	}
+
+	function oneditprepare() {
+		const node = this;
+		if (node.ids) {
+			node.ids = JSON.parse(node.ids);
+		}
+		if (node.data) {
+			node.data = JSON.parse(node.data);
+		}
+		$('.node-input-field-container-row').hide();
+		$('.node-input-code-container-row').hide();
+		$('#node-input-action').change(function() {
+			var action = $(this).val();
+			if (action === 'create') {
+				$('.node-input-code-container-row').hide();
+				$('#node-input-code-container').editableList('empty');
+			} else {
+				$('.node-input-code-container-row').show();
+				if (node.ids != null) {
+					for (var i = 0; i < node.ids.length; i++) {
+						var id = node.ids[i];
+						$('#node-input-code-container').editableList('addItem', id);
+					}
+				}
+			}
+		});
+		$('#node-input-document').change(() => {
+			const server = $('#node-input-server').val();
+			const document = $('#node-input-document').val();
+			if (document != null) {
+				$.ajax({
+					url: 'konecty-server/' + server + '/documents/' + document,
+					type: 'GET',
+					success: function(doc) {
+						if (doc) {
+							node.fields = doc.fields || [];
+							buildFieldList(node);
+							if (node.document === document) {
+								loadData(node);
+							} else {
+								$('#node-input-code-container').editableList('empty');
+								$('#node-input-field-container').editableList('empty');
+							}
+						}
+					}
+				});
+			}
+		});
+		$('#node-input-server').change(function() {
+			const server = $('#node-input-server').val();
+			$.ajax({
+				url: 'konecty-server/' + server + '/documents',
+				type: 'GET',
+				success: function(docs) {
+					var inputDocument = $('#node-input-document');
+					inputDocument
+						.find('optgroup')
+						.remove()
+						.end();
+					var group = $('<optgroup/>', { label: 'Konecty Documents' }).appendTo(inputDocument);
+
+					Array.from(docs).forEach(({ name, label }) => {
+						group.append(
+							$('<option></option>')
+								.val(name)
+								.text(getLabel({ label }))
+						);
+					});
+					if (node.document) {
+						inputDocument.val(node.document);
+						inputDocument.change();
+					} else {
+						inputDocument.val(null);
+					}
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+					if (jqXHR.status == 404) {
+						RED.notify(
+							node._('common.notification.error', { message: node._('common.notification.errors.not-deployed') }),
+							'error'
+						);
+					} else if (jqXHR.status == 500) {
+						RED.notify(node._('common.notification.error', { message: node._('inject.errors.failed') }), 'error');
+					} else if (jqXHR.status == 0) {
+						RED.notify(node._('common.notification.error', { message: node._('common.notification.errors.no-response') }), 'error');
+					} else {
+						RED.notify(
+							node._('common.notification.error', {
+								message: node._('common.notification.errors.unexpected', { status: jqXHR.status, message: textStatus })
+							}),
+							'error'
+						);
+					}
+				}
+			});
+		});
+		$('#node-input-code-container')
+			.css('min-height', '160px')
+			.css('min-width', '450px')
+			.editableList({
+				addItem: function(container, i, code) {
+					container.css({
+						overflow: 'hidden',
+						whiteSpace: 'nowrap'
+					});
+					var codeInput = $('<input/>', {
+						class: 'node-input-code-value',
+						type: 'text',
+						style: 'width:100%'
+					})
+						.appendTo(container)
+						.typedInput({
+							default: 'msg',
+							types: [
+								'msg',
+								'flow',
+								'global',
+								'env',
+								{
+									value: 'code',
+									label: node._('konecty-save.label.code'),
+									validate: /^\d+$/
+								},
+								{
+									value: 'id',
+									label: node._('konecty-save.label.id'),
+									validate: /^\d+$/
+								}
+							]
+						});
+					if (code != null) {
+						codeInput.typedInput('type', code.vt);
+						codeInput.typedInput('value', code.v);
+					}
+				},
+				removable: true
+			});
+	}
+
+	function loadData(node) {
+		$('#node-input-field-container').editableList('empty');
+		if (node.data != null) {
+			for (var i = 0; i < node.data.length; i++) {
+				var data = node.data[i];
+				$('#node-input-field-container').editableList('addItem', data);
+			}
+		}
+	}
+</script>
+<script type="text/javascript">
+	RED.nodes.registerType('konecty-save', {
+		category: 'Konecty',
+		color: '#68B7E0',
+		defaults: {
+			server: { value: '', type: 'konecty-server' },
+			name: { value: '' },
+			document: { value: '' },
+			action: { value: 'create', required: true },
+			ids: { value: [] },
+			data: { value: [] }
+		},
+		inputs: 1,
+		outputs: 2,
+		outputLabels: function(labelIndex) {
+			return [this._('konecty-save.output.success'), this._('konecty-save.output.fail')][labelIndex];
+		},
+		icon: 'konecty.png',
+		label: function() {
+			return this.name || 'konecty-save';
+		},
+		oneditprepare: oneditprepare,
+		oneditsave: oneditsave
+	});
+</script>

@@ -1,0 +1,28 @@
+<script type="text/javascript">
+	RED.nodes.registerType('konecty-server', {
+		category: 'config',
+		defaults: {
+			name: { value: '', required: true },
+			host: { value: 'konecty-embedded-server', required: true },
+			key: { value: '', required: true }
+		},
+		label: function() {
+			return this.name;
+		}
+	});
+</script>
+
+<script type="text/x-red" data-template-name="konecty-server">
+	<div class="form-row">
+			<label for="node-config-input-name"><i class="icon-bookmark"></i> Name</label>
+			<input type="text" id="node-config-input-name">
+	</div>
+	<div class="form-row">
+			<label for="node-config-input-host"><i class="icon-bookmark"></i> Host</label>
+			<input type="text" id="node-config-input-host">
+	</div>
+	<div class="form-row">
+			<label for="node-config-input-key"><i class="icon-bookmark"></i> Access Key</label>
+			<input type="text" id="node-config-input-key">
+	</div>
+</script>

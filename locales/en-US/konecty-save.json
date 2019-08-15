@@ -1,0 +1,48 @@
+{
+	"konecty-save": {
+		"label": {
+			"id": "Identifier",
+			"code": "Code",
+			"name": "Name",
+			"document": "Document",
+			"action": "Action",
+			"data": "Data",
+			"ids": "Identifiers",
+			"form": "Form",
+			"autocomplete": "Find",
+			"editor": "Editor"
+		},
+		"output": {
+			"success": "Success",
+			"fail": "Fail"
+		},
+		"actions": {
+			"create": "Create",
+			"update": "Update"
+		},
+		"address": {
+			"title": "Address",
+			"country": "Country",
+			"state": "State",
+			"city": "City",
+			"place": "Place",
+			"number": "Number",
+			"postalCode": "Postal Code",
+			"district": "District",
+			"placeType": "Place Type",
+			"complement": "Complement",
+			"type": "Type"
+		},
+		"name": {
+			"title": "Person Name",
+			"first": "First Name",
+			"last": "Last Name",
+			"full": "Full Name"
+		},
+		"errors": {
+			"invalid-data": "Input data is missing",
+			"invalid-ids": "Input ids is missing",
+			"error-processing": "Errors processing request: __message__"
+		}
+	}
+}
