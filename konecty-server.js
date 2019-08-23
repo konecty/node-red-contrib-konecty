@@ -9,6 +9,25 @@ module.exports = function(RED) {
 	}
 	RED.nodes.registerType('konecty-server', KonectyServerNode);
 
+	RED.httpAdmin.get('/konecty-server/:id/menu', RED.auth.needsPermission('konecty-server.read'), async function (req, res) {
+		const { id } = req.params;
+		const node = RED.nodes.getNode(id);
+
+		if (node != null) {
+			try {
+				const { host, key } = node;
+				const apiInstance = api({ host, key });
+				const result = await apiInstance.getMenu();
+				res.json(result);
+			} catch (err) {
+				res.sendStatus(500);
+				node.error(`Konecty Server Failed: ${err.toString()}`);
+			}
+		} else {
+			res.sendStatus(404);
+		}
+	});
+
 	RED.httpAdmin.get('/konecty-server/:id/documents', RED.auth.needsPermission('konecty-server.read'), async function(req, res) {
 		const { id } = req.params;
 		const node = RED.nodes.getNode(id);

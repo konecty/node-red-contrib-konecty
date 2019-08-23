@@ -7,12 +7,8 @@
 	  <input type="text" id="node-input-name" placeholder="Name">
 	</div>
 	<div class="form-row">
-	  <label for="node-input-url"><i class="icon-tag"></i> URL</label>
-	  <input type="text" id="node-input-url" placeholder="Konecty Server URL">
-	</div>
-	<div class="form-row">
-	  <label for="node-input-token"><i class="icon-tag"></i> Token</label>
-	  <input type="text" id="node-input-token" placeholder="Your Konecty access token">
+		<label for="node-input-server"><i class="fa fa-globe"></i> Konecty</label>
+		<input type="text" id="node-input-server" placeholder="Konecty Server">
 	</div>
 	<div class="form-row form-row-search" style="display:none">
 	  <label for="node-input-doc"><i class="fa fa-dot-circle-o"></i> <span>Document</span></label>
@@ -253,7 +249,6 @@
       </table>
     `
 		);
-		console.log(kondata);
 		let doc = $('#node-input-doc').val();
 		let termSelect = $('#konecty-search-term-' + index);
 		let fields = kondata[doc] ? kondata[doc]['fields'] : [];
@@ -379,26 +374,18 @@
 	}
 
 	function lookupDocument(index) {
-		let doc = $('#node-input-doc').val();
-		let term = $('#konecty-search-term-' + index).val();
-		let credentials = getCredentials();
-		let searchUrl =
-			credentials.root_url + '/rest/data/' + doc.split(':')[1] + '/lookup/' + term + '?page=1&start=0&limit=10000&search=';
+		const server = $('#node-input-server').val();
+		const document = $('#node-input-doc').val().split(':')[1];
+		const term = $('#konecty-search-term-' + index).val();
 		$('#konecty-search-lookupValue-' + index).show();
 		$('#konecty-search-lookupValue-' + index).autocomplete({
 			source: function(request, response) {
 				$.ajax({
-					headers: {
-						Authorization: credentials.token
-					},
-					url: searchUrl + request.term,
+					url: 'konecty-server/' + server + '/lookup/' + document + '/' + term + '/' + request.term,
+					type: 'GET',
 					dataType: 'json',
-					success: kondata => {
-						response(
-							kondata.data.map(k => {
-								return { id: k._id, value: k.name };
-							})
-						);
+					success: options => {
+						response((options || []).map(opt => ({ id: opt._id, value: opt.name })));
 					}
 				});
 			},
@@ -423,6 +410,7 @@
 			}
 		});
 		documents = sortArrayByAttribute(documents, 'label');
+		$('#node-input-doc').html('');
 		for (d of documents) {
 			$('#node-input-doc').append(
 				$('<option></option>')
@@ -440,6 +428,12 @@
 
 	// loads all existing filters when editing
 	function loadFilters(kondata, filter) {
+		$('#node-input-rule-container').editableList('empty');
+
+		if (filter == undefined) {
+			return;
+		}
+
 		let f = JSON.parse(filter);
 		$.each(f.conditions, function(idx, condition) {
 			$('#node-input-rule-container').editableList('addItem', kondata);
@@ -515,10 +509,12 @@
 	var getCredentials = function() {
 		return null;
 	};
+
 	RED.nodes.registerType('konecty-search', {
 		category: 'Konecty',
 		color: '#68B7E0',
 		defaults: {
+			server: { value: '', type: 'konecty-server' },
 			name: { value: '' },
 			doc: { value: '' },
 			filter: { value: '' }
@@ -528,27 +524,42 @@
 			token: { value: '', required: true },
 			namespace: { value: '' }
 		},
-		oneditprepare: function() {
-			let root_url = this.credentials.url.trim();
-			let token = this.credentials.token.trim();
-			if (root_url && token) {
-				if (root_url.endsWith('/')) {
-					root_url = root_url.slice(0, root_url.length - 1);
+		oneditprepare: function () {
+			const node = this;
+
+			$('#node-input-server').on('change', function () {
+				const server = $('#node-input-server').val();
+				if (server == '_ADD_') {
+					return;
 				}
-				getCredentials = function() {
-					return { root_url: root_url, token: token };
-				};
 				$.ajax({
-					headers: {
-						Authorization: token
+					url: 'konecty-server/' + server + '/menu',
+					type: 'GET',
+					success: function (kondata) {
+						initKonectySearch(kondata, node.doc, node.filter);
 					},
-					url: root_url + '/rest/menu/list',
-					dataType: 'json',
-					success: kondata => {
-						initKonectySearch(kondata, this.doc, this.filter);
+					error: function(jqXHR, textStatus, errorThrown) {
+						if (jqXHR.status == 404) {
+							RED.notify(
+								node._('common.notification.error', { message: node._('common.notification.errors.not-deployed') }),
+								'error'
+							);
+						} else if (jqXHR.status == 500) {
+							RED.notify(node._('common.notification.error', { message: node._('inject.errors.failed') }), 'error');
+						} else if (jqXHR.status == 0) {
+							RED.notify(node._('common.notification.error', { message: node._('common.notification.errors.no-response') }), 'error');
+						} else {
+							RED.notify(
+								node._('common.notification.error', {
+									message: node._('common.notification.errors.unexpected', { status: jqXHR.status, message: textStatus })
+								}),
+								'error'
+							);
+						}
 					}
 				});
-			}
+			});
+
 		},
 		oneditsave: function() {
 			saveKonectyFilter();
