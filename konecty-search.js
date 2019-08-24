@@ -17,6 +17,7 @@ module.exports = function (RED) {
     let node = this;
     let flow = node.context().flow;
     let global = node.context().global;
+    node.server = RED.nodes.getNode(config.server);
 
     node.on('input', function (msg) {
       // FILTER EVALUATION

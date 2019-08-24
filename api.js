@@ -17,6 +17,14 @@ module.exports = ({ host, key }) => ({
 		});
 		return data;
 	},
+	async getMenu(id) {
+		const { data } = await axios.get(`${host}/rest/menu/list`, {
+			headers: {
+				Authorization: key
+			}
+		});
+		return data;
+	},
 	async getSuggestions(document, field, search) {
 		const { data } = await axios.get(`${host}/rest/data/${document}/lookup/${field}`, {
 			headers: {
