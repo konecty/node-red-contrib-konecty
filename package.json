@@ -1,6 +1,10 @@
 {
 	"name": "node-red-contrib-konecty",
-	"version": "1.1.4",
+	"version": "1.2.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Konecty/node-red-contrib-konecty"
+	},
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -13,7 +17,8 @@
 		"nodes": {
 			"konecty-server": "konecty-server.js",
 			"konecty-search": "konecty-search.js",
-			"konecty-save": "konecty-save.js"
+			"konecty-save": "konecty-save.js",
+			"konecty-queue": "konecty-queue.js"
 		}
 	},
 	"dependencies": {

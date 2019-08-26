@@ -10,7 +10,8 @@
 			"ids": "Identifiers",
 			"form": "Form",
 			"autocomplete": "Find",
-			"editor": "Editor"
+			"editor": "Editor",
+			"default-label": "Save Document"
 		},
 		"output": {
 			"success": "Success",

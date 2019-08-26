@@ -375,7 +375,9 @@
 
 	function lookupDocument(index) {
 		const server = $('#node-input-server').val();
-		const document = $('#node-input-doc').val().split(':')[1];
+		const document = $('#node-input-doc')
+			.val()
+			.split(':')[1];
 		const term = $('#konecty-search-term-' + index).val();
 		$('#konecty-search-lookupValue-' + index).show();
 		$('#konecty-search-lookupValue-' + index).autocomplete({
@@ -524,10 +526,10 @@
 			token: { value: '', required: true },
 			namespace: { value: '' }
 		},
-		oneditprepare: function () {
+		oneditprepare: function() {
 			const node = this;
 
-			$('#node-input-server').on('change', function () {
+			$('#node-input-server').on('change', function() {
 				const server = $('#node-input-server').val();
 				if (server == '_ADD_') {
 					return;
@@ -535,7 +537,7 @@
 				$.ajax({
 					url: 'konecty-server/' + server + '/menu',
 					type: 'GET',
-					success: function (kondata) {
+					success: function(kondata) {
 						initKonectySearch(kondata, node.doc, node.filter);
 					},
 					error: function(jqXHR, textStatus, errorThrown) {
@@ -547,7 +549,10 @@
 						} else if (jqXHR.status == 500) {
 							RED.notify(node._('common.notification.error', { message: node._('inject.errors.failed') }), 'error');
 						} else if (jqXHR.status == 0) {
-							RED.notify(node._('common.notification.error', { message: node._('common.notification.errors.no-response') }), 'error');
+							RED.notify(
+								node._('common.notification.error', { message: node._('common.notification.errors.no-response') }),
+								'error'
+							);
 						} else {
 							RED.notify(
 								node._('common.notification.error', {
@@ -559,7 +564,6 @@
 					}
 				});
 			});
-
 		},
 		oneditsave: function() {
 			saveKonectyFilter();
@@ -567,8 +571,9 @@
 		inputs: 1,
 		outputs: 1,
 		icon: 'konecty.png',
+		paletteLabel: 'Retrive Documents',
 		label: function() {
-			return this.name || 'konecty-search';
+			return this.name || 'Retrive Documents';
 		}
 	});
 </script>

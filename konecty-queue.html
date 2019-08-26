@@ -1,0 +1,104 @@
+<script type="text/x-red" data-template-name="konecty-queue">
+			<div class="form-row">
+				<label for="node-input-server"><i class="fa fa-globe"></i> Konecty</label>
+				<input type="text" id="node-input-server" placeholder="Konecty Server">
+		</div>
+		<div class="form-row">
+				<label for="node-input-name"><i class="fa fa-tag"></i>  <span data-i18n="konecty-queue.label.name"></span></label>
+				<input type="text" id="node-input-name" data-i18n="[placeholder]konecty-queue.label.name">
+		</div>
+		<div class="form-row">
+			<label for="node-input-queue"><i class="fa fa-tag"></i>  <span data-i18n="konecty-queue.label.queue"></span></label>
+			<input type="text" style="width: 70%;" id="node-input-queue" data-i18n="[placeholder]konecty-queue.label.queue">
+			<div id="queue-autocomplete-row" class="form-row" style="margin-top: 5px; margin-left: 104px;width: 70%;display:none;">
+				<input type="text" style="width: 100%;" id="node-input-queue-autocomplete" data-i18n="[placeholder]konecty-queue.placeholder.autocomplete">
+				<input type="hidden" id="node-input-queue-autocomplete-id">
+			</div>
+	</div>
+</script>
+
+<script type="text/javascript">
+	RED.nodes.registerType('konecty-queue', {
+		category: 'Konecty',
+		color: '#68B7E0',
+		defaults: {
+			server: { value: '', type: 'konecty-server' },
+			name: { value: '' },
+			queueType: { value: 'msg' },
+			queue: { value: '' },
+			queueData: { value: '' }
+		},
+		inputs: 1,
+		outputs: 2,
+		outputLabels: function(labelIndex) {
+			return [this._('konecty-queue.output.success'), this._('konecty-queue.output.fail')][labelIndex];
+		},
+		icon: 'konecty.png',
+		paletteLabel: 'Next from queue',
+		label: function() {
+			return this.name || 'Next from queue';
+		},
+		oneditprepare: function() {
+			const node = this;
+			$('#node-input-queue')
+				.typedInput({
+					default: node.queueType || 'msg',
+					types: [
+						'msg',
+						'flow',
+						'global',
+						'env',
+						'str',
+						{
+							value: 'form',
+							label: node._('konecty-queue.label.autocomplete'),
+							hasValue: false
+						}
+					]
+				})
+				.change(function() {
+					var type = $(this).typedInput('type');
+					if (type === 'form') {
+						$('#queue-autocomplete-row').show();
+					} else {
+						$('#queue-autocomplete-row').hide();
+					}
+				});
+			const server = $('#node-input-server').val();
+
+			$('#node-input-queue-autocomplete').autocomplete({
+				source: function(request, response) {
+					$.ajax({
+						url: 'konecty-server/' + server + '/lookupDocument/Queue/name/' + request.term,
+						type: 'GET',
+						dataType: 'json',
+						success: options => {
+							response((options || []).map(opt => ({ id: opt._id, value: opt.name })));
+						}
+					});
+				},
+				minLength: 2,
+				select: function(event, ui) {
+					$('#node-input-queue-autocomplete-id').val(ui.item.id);
+				}
+			});
+			if (node.queueType === 'form') {
+				const { i, l } = JSON.parse(node.queueData);
+				$('#node-input-queue-autocomplete').val(l);
+				$('#node-input-queue-autocomplete-id').val(i);
+			}
+		},
+		oneditsave: function() {
+			const node = this;
+			node.queueType = $('#node-input-queue').typedInput('type');
+			if (node.queueType === 'form') {
+				node.queueData = JSON.stringify({
+					i: $('#node-input-queue-autocomplete-id').val(),
+					l: $('#node-input-queue-autocomplete').val()
+				});
+			} else {
+				node.queueData = '{}';
+			}
+		}
+	});
+</script>

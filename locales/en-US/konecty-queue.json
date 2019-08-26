@@ -1,0 +1,23 @@
+{
+	"konecty-queue": {
+		"label": {
+			"id": "Identifier",
+			"code": "Code",
+			"name": "Name",
+			"queue": "Queue",
+			"autocomplete": "Find",
+			"running": "Finding next..."
+		},
+		"placeholder": {
+			"autocomplete": "Find a queue"
+		},
+		"output": {
+			"success": "Success",
+			"fail": "Fail"
+		},
+		"errors": {
+			"invalid-data": "Input data is missing",
+			"error-processing": "Errors processing request: __message__"
+		}
+	}
+}

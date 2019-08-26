@@ -92,7 +92,6 @@ module.exports = ({ host, key }) => ({
 		return result;
 	},
 	async create(document, body) {
-		console.log('TCL: create -> body', JSON.stringify(body, null, 2));
 		const { data: result } = await axios.post(`${host}/rest/data/${document}`, body, {
 			headers: {
 				Authorization: key
@@ -100,5 +99,27 @@ module.exports = ({ host, key }) => ({
 		});
 
 		return result;
+	},
+	async getSuggestionsForDocument(document, field, search) {
+		const { data } = await axios.get(`${host}/rest/data/${document}/find`, {
+			headers: {
+				Authorization: key
+			},
+			params: {
+				limit: 20,
+				filter: { match: 'and', conditions: [{ term: field, operator: 'contains', value: search }] },
+				fields: `_id, ${field}`,
+				sort: [{ property: field, direction: 'ASC' }]
+			}
+		});
+		return data;
+	},
+	async getNextOnQueue(queueId) {
+		const { data } = await axios.get(`${host}/rest/data/Queue/queue/next/${queueId}`, {
+			headers: {
+				Authorization: key
+			}
+		});
+		return data;
 	}
 });

@@ -9,7 +9,7 @@ module.exports = function(RED) {
 	}
 	RED.nodes.registerType('konecty-server', KonectyServerNode);
 
-	RED.httpAdmin.get('/konecty-server/:id/menu', RED.auth.needsPermission('konecty-server.read'), async function (req, res) {
+	RED.httpAdmin.get('/konecty-server/:id/menu', RED.auth.needsPermission('konecty-server.read'), async function(req, res) {
 		const { id } = req.params;
 		const node = RED.nodes.getNode(id);
 
@@ -82,6 +82,33 @@ module.exports = function(RED) {
 					const apiInstance = api({ host, key });
 
 					const result = await apiInstance.getSuggestions(document, field, search);
+					if (result.success) {
+						return res.json(result.data);
+					}
+					return [];
+				} catch (err) {
+					res.sendStatus(500);
+					node.error(`Konecty Server Failed: ${err.toString()}`);
+				}
+			} else {
+				res.sendStatus(404);
+			}
+		}
+	);
+
+	RED.httpAdmin.get(
+		'/konecty-server/:id/lookupDocument/:document/:field/:search',
+		RED.auth.needsPermission('konecty-server.read'),
+		async function(req, res) {
+			const { id, document, field, search } = req.params;
+			const node = RED.nodes.getNode(id);
+			if (node != null) {
+				try {
+					const { host, key } = node;
+
+					const apiInstance = api({ host, key });
+
+					const result = await apiInstance.getSuggestionsForDocument(document, field, search);
 					if (result.success) {
 						return res.json(result.data);
 					}

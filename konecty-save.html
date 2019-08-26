@@ -1,5 +1,4 @@
 <script type="text/x-red" data-template-name="konecty-save">
-	<!--31-->
 		<div class="form-row">
 				<label for="node-input-server"><i class="fa fa-globe"></i> Konecty</label>
 				<input type="text" id="node-input-server" placeholder="Konecty Server">
@@ -719,8 +718,9 @@
 			return [this._('konecty-save.output.success'), this._('konecty-save.output.fail')][labelIndex];
 		},
 		icon: 'konecty.png',
+		paletteLabel: 'Save Document',
 		label: function() {
-			return this.name || 'konecty-save';
+			return this.name || 'Save Document';
 		},
 		oneditprepare: oneditprepare,
 		oneditsave: oneditsave
