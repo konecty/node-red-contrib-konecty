@@ -554,10 +554,10 @@
 
 	function oneditprepare() {
 		const node = this;
-		if (node.ids) {
+		if (node.ids && typeof node.ids === 'string') {
 			node.ids = JSON.parse(node.ids);
 		}
-		if (node.data) {
+		if (node.data && typeof node.data === 'string') {
 			node.data = JSON.parse(node.data);
 		}
 		$('.node-input-field-container-row').hide();
