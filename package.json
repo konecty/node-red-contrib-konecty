@@ -1,21 +1,30 @@
 {
 	"name": "node-red-contrib-konecty",
-	"version": "1.1.4",
+	"version": "1.2.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Konecty/node-red-contrib-konecty"
+	},
 	"description": "",
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"keywords": [],
-	"author": "Luciano Costa <luciano@meekalabs.com>",
+	"author": "Konecty Business Platform <dev@konecty.com>",
 	"license": "ISC",
 	"node-red": {
 		"nodes": {
-			"konecty-search": "konecty-search.js"
+			"konecty-server": "konecty-server.js",
+			"konecty-search": "konecty-search.js",
+			"konecty-save": "konecty-save.js",
+			"konecty-queue": "konecty-queue.js",
+			"konecty-contact": "konecty-contact.js",
+			"konecty-opportunity": "konecty-opportunity.js"
 		}
 	},
 	"dependencies": {
-		"axios": "^0.18.0",
+		"axios": "^0.19.0",
 		"moment": "^2.24.0"
 	}
 }
