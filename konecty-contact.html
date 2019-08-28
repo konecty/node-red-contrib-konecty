@@ -1,0 +1,212 @@
+<script type="text/x-red" data-template-name="konecty-contact">
+	<!--10-->
+		<div class="form-row">
+			<label for="node-input-server"><i class="fa fa-globe"></i> Konecty</label>
+			<input type="text" id="node-input-server" placeholder="Konecty Server">
+	</div>
+	<div class="form-row">
+			<label for="node-input-name"><i class="fa fa-tag"></i>  <span data-i18n="konecty-contact.label.name"></span></label>
+			<input type="text" id="node-input-name" data-i18n="[placeholder]konecty-contact.label.name">
+	</div>
+	<div class="form-row">
+			<hr />
+			<strong><i class="fa fa-address-card"></i>  <span data-i18n="konecty-contact.label.title"></span></strong>
+	</div>
+	<div class="form-row">
+			<label for="node-input-fullname"><i class="fa fa-tag"></i>  <span data-i18n="konecty-contact.label.fullname"></span></label>
+			<input type="text" id="node-input-fullname" data-i18n="[placeholder]konecty-contact.label.fullname">
+	</div>
+	<div class="form-row">
+			<label for="node-input-email"><i class="fa fa-tag"></i>  <span data-i18n="konecty-contact.label.email"></span></label>
+			<input type="text" id="node-input-email" data-i18n="[placeholder]konecty-contact.label.email">
+	</div>
+	<div class="form-row">
+			<label for="node-input-phoneNumber"><i class="fa fa-tag"></i>  <span data-i18n="konecty-contact.label.phoneNumber"></span></label>
+			<input type="text" id="node-input-phoneNumber" data-i18n="[placeholder]konecty-contact.label.phoneNumber">
+	</div>
+	<div class="form-row">
+		<label for="node-input-user"><i class="fa fa-tag"></i>  <span data-i18n="konecty-contact.label.user"></span></label>
+		<input type="text" style="width: 70%;" id="node-input-user" data-i18n="[placeholder]konecty-contact.label.user">
+		<div id="user-autocomplete-row" class="form-row" style="margin-top: 5px; margin-left: 104px;width: 70%;display:none;">
+			<input type="text" style="width: 100%;" id="node-input-user-autocomplete" data-i18n="[placeholder]konecty-contact.label.autocomplete">
+			<input type="hidden" id="node-input-user-autocomplete-id">
+		</div>
+	</div>
+	<div class="form-row">
+			<label for="node-input-campaign"><i class="fa fa-tag"></i>  <span data-i18n="konecty-contact.label.campaign"></span></label>
+			<input type="text" style="width: 70%;" id="node-input-campaign" data-i18n="[placeholder]konecty-contact.label.campaign">
+			<div id="campaign-autocomplete-row" class="form-row" style="margin-top: 5px; margin-left: 104px;width: 70%;display:none;">
+				<input type="text" style="width: 100%;" id="node-input-campaign-autocomplete" data-i18n="[placeholder]konecty-contact.label.autocomplete">
+				<input type="hidden" id="node-input-campaign-autocomplete-id">
+			</div>
+		</div>
+	</div>
+	<div class="form-row">
+			<label for="node-input-queue"><i class="fa fa-tag"></i>  <span data-i18n="konecty-contact.label.queue"></span></label>
+			<input type="text" style="width: 70%;" id="node-input-queue" data-i18n="[placeholder]konecty-contact.label.queue">
+			<div id="queue-autocomplete-row" class="form-row" style="margin-top: 5px; margin-left: 104px;width: 70%;display:none;">
+				<input type="text" style="width: 100%;" id="node-input-queue-autocomplete" data-i18n="[placeholder]konecty-contact.label.autocomplete">
+				<input type="hidden" id="node-input-queue-autocomplete-id">
+			</div>
+		</div>
+	</div>
+	<div class="form-row">
+			<label for="node-input-extraFields"><i class="fa fa-tag"></i>  <span data-i18n="konecty-contact.label.extraFields"></span></label>
+			<input type="text" id="node-input-extraFields" data-i18n="[placeholder]konecty-contact.label.extraFields">
+	</div>
+</script>
+
+<script>
+	function createStringField(id, type, value) {
+		$(id)
+			.css('width', '70%')
+			.typedInput({
+				default: type || 'str',
+				types: ['msg', 'flow', 'global', 'env', 'str']
+			});
+		$(id).typedInput('value', value);
+	}
+
+	function createAutocompleteField(node, field, type, value, data) {
+		$('#node-input-' + field)
+			.typedInput({
+				default: type || 'form',
+				types: [
+					'msg',
+					'flow',
+					'global',
+					'env',
+					{
+						value: 'form',
+						label: node._('konecty-contact.label.autocomplete'),
+						hasValue: false
+					}
+				]
+			})
+			.change(function() {
+				var type = $(this).typedInput('type');
+				if (type === 'form') {
+					$('#' + field + '-autocomplete-row').show();
+				} else {
+					$('#' + field + '-autocomplete-row').hide();
+				}
+			});
+
+		$(`#node-input-${field}-autocomplete`).autocomplete({
+			source: function(request, response) {
+				const server = $('#node-input-server').val();
+				if (field === 'user') {
+					$.ajax({
+						url: 'konecty-server/' + server + '/lookup/Contact/_user/' + request.term,
+						type: 'GET',
+						dataType: 'json',
+						success: options => {
+							response((options || []).map(opt => ({ id: opt._id, value: opt.name })));
+						}
+					});
+				} else {
+					$.ajax({
+						url: 'konecty-server/' + server + '/lookup/Contact/' + field + '/' + request.term,
+						type: 'GET',
+						dataType: 'json',
+						success: options => {
+							response((options || []).map(opt => ({ id: opt._id, value: opt.name })));
+						}
+					});
+				}
+			},
+			minLength: 2,
+			select: function(event, ui) {
+				$('#node-input-' + field + '-autocomplete-id').val(ui.item.id);
+			}
+		});
+		if (type === 'form') {
+			try {
+				const { i, l } = JSON.parse(data);
+				$('#node-input-' + field + '-autocomplete').val(l);
+				$('#node-input-' + field + '-autocomplete-id').val(i);
+			} catch (_) {
+				$('#node-input-' + field + '-autocomplete').val('');
+				$('#node-input-' + field + '-autocomplete-id').val('');
+			}
+		}
+	}
+</script>
+
+<script type="text/javascript">
+	RED.nodes.registerType('konecty-contact', {
+		category: 'Konecty',
+		color: '#68B7E0',
+		defaults: {
+			server: { value: '', type: 'konecty-server' },
+			name: { value: '' },
+			fullname: { value: '' },
+			fullnameType: { value: 'str' },
+			email: { value: '' },
+			emailType: { value: 'str' },
+			phoneNumber: { value: '' },
+			phoneNumberType: { value: 'str' },
+			user: { value: '' },
+			userType: { value: 'form' },
+			userData: { value: '' },
+			campaign: { value: '' },
+			campaignType: { value: 'form' },
+			campaignData: { value: '' },
+			queue: { value: '' },
+			queueType: { value: 'form' },
+			queueData: { value: '' },
+			extraFields: { value: '{}' },
+			extraFieldsType: { value: 'json' }
+		},
+		inputs: 1,
+		outputs: 2,
+		outputLabels: function(labelIndex) {
+			return [this._('konecty-contact.output.success'), this._('konecty-contact.output.fail')][labelIndex];
+		},
+		icon: 'konecty.png',
+		paletteLabel: 'Create Contact',
+		label: function() {
+			return this.name || 'Create Contact';
+		},
+		oneditprepare: function() {
+			const node = this;
+
+			createStringField('#node-input-fullname', node.fullnameType, node.fullname);
+			createStringField('#node-input-email', node.emailType, node.email);
+			createStringField('#node-input-phoneNumber', node.phoneNumberType, node.phoneNumber);
+			createAutocompleteField(node, 'user', node.userType, node.user, node.userData);
+			createAutocompleteField(node, 'campaign', node.campaignType, node.campaign, node.campaignData);
+			createAutocompleteField(node, 'queue', node.queueType, node.queue, node.queueData);
+
+			$('#node-input-extraFields')
+				.css('width', '70%')
+				.typedInput({
+					default: node.extraFieldsType || 'json',
+					types: ['msg', 'flow', 'global', 'env', 'json']
+				});
+			$('#node-input-extraFields').typedInput('value', node.extraFields || '{}');
+		},
+		oneditsave: function() {
+			const node = this;
+			const fields = ['fullname', 'email', 'phoneNumber', 'user', 'campaign', 'queue', 'extraFields'];
+			for (var index = 0; index < fields.length; index++) {
+				const field = fields[index];
+				const type = $('#node-input-' + field).typedInput('type');
+				const value = $('#node-input-' + field).typedInput('value');
+				node[field + 'Type'] = type;
+				switch (type) {
+					case 'form':
+						node[field + 'Data'] = JSON.stringify({
+							i: $('#node-input-' + field + '-autocomplete-id').val(),
+							l: $('#node-input-' + field + '-autocomplete').val()
+						});
+						break;
+
+					default:
+						node[field] = value;
+						break;
+				}
+			}
+		}
+	});
+</script>

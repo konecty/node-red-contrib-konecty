@@ -1,0 +1,29 @@
+{
+	"konecty-contact": {
+		"label": {
+			"title": "Contact Data",
+			"name": "Name",
+			"fullname": "Full name",
+			"email": "Email",
+			"phoneNumber": "Phone Number",
+			"user": "Owner",
+			"campaign": "Campaign",
+			"queue": "Queue",
+			"extraFields": "Extra data",
+
+			"autocomplete": "Find",
+			"running": "Creating a contact..."
+		},
+		"output": {
+			"success": "Success",
+			"fail": "Fail"
+		},
+		"errors": {
+			"invalid-data": "Input data is missing",
+			"error-processing": "Errors processing request: __message__",
+			"invalid-phone": "Value for Phone Number with countryCode 55 must contains from 10 to 12 digits",
+			"invalid-email": "Email address is invalid",
+			"phone-or-email-is-required": "At least one of fields email or phone number must be informed"
+		}
+	}
+}

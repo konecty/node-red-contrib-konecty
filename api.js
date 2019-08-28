@@ -121,5 +121,24 @@ module.exports = ({ host, key }) => ({
 			}
 		});
 		return data;
+	},
+	async createContact(contactData) {
+		const { data } = await axios.post(
+			`${host}/rest/process/submit`,
+			{
+				data: [
+					{
+						name: 'contact',
+						data: contactData
+					}
+				]
+			},
+			{
+				headers: {
+					Authorization: key
+				}
+			}
+		);
+		return data;
 	}
 });

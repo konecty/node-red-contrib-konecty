@@ -18,7 +18,8 @@
 			"konecty-server": "konecty-server.js",
 			"konecty-search": "konecty-search.js",
 			"konecty-save": "konecty-save.js",
-			"konecty-queue": "konecty-queue.js"
+			"konecty-queue": "konecty-queue.js",
+			"konecty-contact": "konecty-contact.js"
 		}
 	},
 	"dependencies": {
