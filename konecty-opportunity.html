@@ -1,0 +1,202 @@
+<script type="text/x-red" data-template-name="konecty-opportunity">
+		<div class="form-row">
+			<label for="node-input-server"><i class="fa fa-globe"></i> Konecty</label>
+			<input type="text" id="node-input-server" placeholder="Konecty Server">
+	</div>
+	<div class="form-row">
+			<label for="node-input-name"><i class="fa fa-tag"></i>  <span data-i18n="konecty-opportunity.label.name"></span></label>
+			<input type="text" id="node-input-name" data-i18n="[placeholder]konecty-opportunity.label.name">
+	</div>
+	<div class="form-row">
+			<hr />
+			<strong><i class="fa fa-address-card"></i>  <span data-i18n="konecty-opportunity.label.title"></span></strong>
+	</div>
+	<div class="form-row">
+		<label for="node-input-contact"><i class="fa fa-tag"></i>  <span data-i18n="konecty-opportunity.label.contact"></span></label>
+		<input type="text" style="width: 70%;" id="node-input-contact" data-i18n="[placeholder]konecty-opportunity.label.contact">
+		<div id="contact-autocomplete-row" class="form-row" style="margin-top: 5px; margin-left: 104px;width: 70%;display:none;">
+			<input type="text" style="width: 100%;" id="node-input-contact-autocomplete" data-i18n="[placeholder]konecty-opportunity.label.autocomplete">
+			<input type="hidden" id="node-input-contact-autocomplete-id">
+		</div>
+	</div>
+	<div class="form-row">
+			<label for="node-input-product"><i class="fa fa-tag"></i>  <span data-i18n="konecty-opportunity.label.product"></span></label>
+			<input type="text" style="width: 70%;" id="node-input-product" data-i18n="[placeholder]konecty-opportunity.label.product">
+		</div>
+	</div>
+	<div class="form-row">
+		<label for="node-input-user"><i class="fa fa-tag"></i>  <span data-i18n="konecty-opportunity.label.user"></span></label>
+		<input type="text" style="width: 70%;" id="node-input-user" data-i18n="[placeholder]konecty-opportunity.label.user">
+		<div id="user-autocomplete-row" class="form-row" style="margin-top: 5px; margin-left: 104px;width: 70%;display:none;">
+			<input type="text" style="width: 100%;" id="node-input-user-autocomplete" data-i18n="[placeholder]konecty-opportunity.label.autocomplete">
+			<input type="hidden" id="node-input-user-autocomplete-id">
+		</div>
+	</div>
+	<div class="form-row">
+			<label for="node-input-campaign"><i class="fa fa-tag"></i>  <span data-i18n="konecty-opportunity.label.campaign"></span></label>
+			<input type="text" style="width: 70%;" id="node-input-campaign" data-i18n="[placeholder]konecty-opportunity.label.campaign">
+			<div id="campaign-autocomplete-row" class="form-row" style="margin-top: 5px; margin-left: 104px;width: 70%;display:none;">
+				<input type="text" style="width: 100%;" id="node-input-campaign-autocomplete" data-i18n="[placeholder]konecty-opportunity.label.autocomplete">
+				<input type="hidden" id="node-input-campaign-autocomplete-id">
+			</div>
+		</div>
+	</div>
+	<div class="form-row">
+			<label for="node-input-extraFields"><i class="fa fa-tag"></i>  <span data-i18n="konecty-opportunity.label.extraFields"></span></label>
+			<input type="text" id="node-input-extraFields" data-i18n="[placeholder]konecty-opportunity.label.extraFields">
+	</div>
+</script>
+
+<script>
+	function createField(id, type, value, extraTypes = ['str']) {
+		$(id)
+			.css('width', '70%')
+			.typedInput({
+				default: type || 'str',
+				types: ['msg', 'flow', 'global', 'env', ...extraTypes]
+			});
+		$(id).typedInput('value', value);
+	}
+
+	function createAutocompleteField(node, field, type, value, data) {
+		$('#node-input-' + field)
+			.typedInput({
+				default: type || 'form',
+				types: [
+					'msg',
+					'flow',
+					'global',
+					'env',
+					{
+						value: 'form',
+						label: node._('konecty-opportunity.label.autocomplete'),
+						hasValue: false
+					}
+				]
+			})
+			.change(function() {
+				var type = $(this).typedInput('type');
+				if (type === 'form') {
+					$('#' + field + '-autocomplete-row').show();
+				} else {
+					$('#' + field + '-autocomplete-row').hide();
+				}
+			});
+
+		$(`#node-input-${field}-autocomplete`).autocomplete({
+			source: function(request, response) {
+				const server = $('#node-input-server').val();
+				if (field === 'user') {
+					$.ajax({
+						url: 'konecty-server/' + server + '/lookup/Opportunity/_user/' + request.term,
+						type: 'GET',
+						dataType: 'json',
+						success: options => {
+							response((options || []).map(opt => ({ id: opt._id, value: opt.name })));
+						}
+					});
+				} else {
+					$.ajax({
+						url: 'konecty-server/' + server + '/lookup/Opportunity/' + field + '/' + request.term,
+						type: 'GET',
+						dataType: 'json',
+						success: options => {
+							if (field === 'contact') {
+								return response((options || []).map(opt => ({ id: opt._id, value: opt.name.full })));
+							}
+							response((options || []).map(opt => ({ id: opt._id, value: opt.name })));
+						}
+					});
+				}
+			},
+			minLength: 2,
+			select: function(event, ui) {
+				$('#node-input-' + field + '-autocomplete-id').val(ui.item.id);
+			}
+		});
+		if (type === 'form') {
+			try {
+				const { i, l } = JSON.parse(data);
+				$('#node-input-' + field + '-autocomplete').val(l);
+				$('#node-input-' + field + '-autocomplete-id').val(i);
+			} catch (_) {
+				$('#node-input-' + field + '-autocomplete').val('');
+				$('#node-input-' + field + '-autocomplete-id').val('');
+			}
+		}
+	}
+</script>
+
+<script type="text/javascript">
+	RED.nodes.registerType('konecty-opportunity', {
+		category: 'Konecty',
+		color: '#68B7E0',
+		defaults: {
+			server: { value: '', type: 'konecty-server' },
+			name: { value: '' },
+
+			contact: { value: '' },
+			contactType: { value: 'form' },
+			contactData: { value: '' },
+
+			user: { value: '' },
+			userType: { value: 'form' },
+			userData: { value: '' },
+
+			product: { value: '' },
+			productType: { value: 'form' },
+
+			campaign: { value: '' },
+			campaignType: { value: 'form' },
+			campaignData: { value: '' },
+
+			extraFields: { value: '{}' },
+			extraFieldsType: { value: 'json' }
+		},
+		inputs: 1,
+		outputs: 2,
+		outputLabels: function(labelIndex) {
+			return [this._('konecty-opportunity.output.success'), this._('konecty-opportunity.output.fail')][labelIndex];
+		},
+		icon: 'konecty.png',
+		paletteLabel: 'Create Opportunity',
+		label: function() {
+			return this.name || 'Create Opportunity';
+		},
+		oneditprepare: function() {
+			const node = this;
+
+			createField('#node-input-product', node.productType, node.product, ['str', 'num']);
+
+			createAutocompleteField(node, 'contact', node.contactType, node.contact, node.contactData);
+			createAutocompleteField(node, 'user', node.userType, node.user, node.userData);
+			createAutocompleteField(node, 'campaign', node.campaignType, node.campaign, node.campaignData);
+
+			$('#node-input-extraFields')
+				.css('width', '70%')
+				.typedInput({
+					default: node.extraFieldsType || 'json',
+					types: ['msg', 'flow', 'global', 'env', 'json']
+				});
+			$('#node-input-extraFields').typedInput('value', node.extraFields || '{}');
+		},
+		oneditsave: function() {
+			const node = this;
+			const fields = ['contact', 'user', 'product', 'campaign', 'extraFields'];
+			for (var index = 0; index < fields.length; index++) {
+				const field = fields[index];
+				const type = $('#node-input-' + field).typedInput('type');
+				const value = $('#node-input-' + field).typedInput('value');
+				node[field + 'Type'] = type;
+				if (type === 'form') {
+					node[field + 'Data'] = JSON.stringify({
+						i: $('#node-input-' + field + '-autocomplete-id').val(),
+						l: $('#node-input-' + field + '-autocomplete').val()
+					});
+				} else {
+					node[field] = value;
+				}
+			}
+		}
+	});
+</script>

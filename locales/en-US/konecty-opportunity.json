@@ -1,0 +1,24 @@
+{
+	"konecty-opportunity": {
+		"label": {
+			"title": "Opportunity Data",
+			"name": "Name",
+			"contact": "Contact",
+			"product": "Product",
+			"user": "Owner",
+			"campaign": "Campaign",
+			"extraFields": "Extra data",
+
+			"autocomplete": "Find",
+			"running": "Creating a opportunity..."
+		},
+		"output": {
+			"success": "Success",
+			"fail": "Fail"
+		},
+		"errors": {
+			"invalid-data": "Input data is missing",
+			"error-processing": "Errors processing request: __message__"
+		}
+	}
+}

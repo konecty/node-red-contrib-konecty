@@ -140,5 +140,24 @@ module.exports = ({ host, key }) => ({
 			}
 		);
 		return data;
+	},
+	async createOpportunity(opportunityData) {
+		const { data } = await axios.post(
+			`${host}/rest/process/submit`,
+			{
+				data: [
+					{
+						name: 'opportunity',
+						data: opportunityData
+					}
+				]
+			},
+			{
+				headers: {
+					Authorization: key
+				}
+			}
+		);
+		return data;
 	}
 });

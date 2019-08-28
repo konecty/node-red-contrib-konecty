@@ -19,7 +19,8 @@
 			"konecty-search": "konecty-search.js",
 			"konecty-save": "konecty-save.js",
 			"konecty-queue": "konecty-queue.js",
-			"konecty-contact": "konecty-contact.js"
+			"konecty-contact": "konecty-contact.js",
+			"konecty-opportunity": "konecty-opportunity.js"
 		}
 	},
 	"dependencies": {
