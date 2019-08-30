@@ -64,10 +64,10 @@
 						$('#queue-autocomplete-row').hide();
 					}
 				});
-			const server = $('#node-input-server').val();
 
 			$('#node-input-queue-autocomplete').autocomplete({
 				source: function(request, response) {
+					const server = $('#node-input-server').val();
 					$.ajax({
 						url: 'konecty-server/' + server + '/lookupDocument/Queue/name/' + request.term,
 						type: 'GET',
