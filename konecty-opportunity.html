@@ -55,7 +55,9 @@
 				default: type || 'str',
 				types: ['msg', 'flow', 'global', 'env', ...extraTypes]
 			});
-		$(id).typedInput('value', value);
+		if (value) {
+			$(id).typedInput('value', value);
+		}
 	}
 
 	function createAutocompleteField(node, field, type, value, data) {
@@ -144,7 +146,7 @@
 			userData: { value: '' },
 
 			product: { value: '' },
-			productType: { value: 'form' },
+			productType: { value: 'num' },
 
 			campaign: { value: '' },
 			campaignType: { value: 'form' },

@@ -318,6 +318,27 @@
 						.attr('data-type', 'address.geolocation.1')
 						.text('Endereço > Geolocalização 2')
 				);
+			} else if (f.type == 'email') {
+				termSelect.append(
+					$('<option></option>')
+						.attr('value', f.value + '.address')
+						.attr('data-type', 'email.address')
+						.text('Email > Endereço')
+				);
+			} else if (f.type == 'phone') {
+				termSelect.append(
+					$('<option></option>')
+						.attr('value', f.value + '.phoneNumber')
+						.attr('data-type', 'phone.phoneNumber')
+						.text('Telefone > Número')
+				);
+			} else if (f.type == 'personName') {
+				termSelect.append(
+					$('<option></option>')
+						.attr('value', f.value + '.full')
+						.attr('data-type', 'personName.full')
+						.text('Nome > Completo')
+				);
 			} else {
 				termSelect.append(
 					$('<option></option>')
