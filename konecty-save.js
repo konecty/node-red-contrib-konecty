@@ -21,54 +21,57 @@ module.exports = function(RED) {
 				return;
 			}
 
-			const body = data.reduce((acc, { n, t, vt, v }) => {
+			const body = data.reduce((acc, { n, t, vt, v, il }) => {
+				let value;
 				switch (t) {
 					case 'email':
 						if (STANDARD_TYPES.includes(vt)) {
-							return { ...acc, [n]: JSON.parse(RED.util.evaluateNodeProperty(v, vt, this, msg)) };
+							value = JSON.parse(RED.util.evaluateNodeProperty(v, vt, this, msg));
 						} else {
-							return {
-								...acc,
-								[n]: {
-									type: vt,
-									address: v
-								}
+							value = {
+								type: vt,
+								address: v
 							};
 						}
+						break;
 					case 'date':
 					case 'dateTime':
-						return { ...acc, [n]: Date.parse(RED.util.evaluateNodeProperty(v, vt, this, msg)) };
+						value = Date.parse(RED.util.evaluateNodeProperty(v, vt, this, msg));
+						break;
 					case 'lookup':
 						if (vt === 'form') {
-							return { ...acc, [n]: { _id: v.i } };
+							value = { _id: v.i };
 						} else {
-							return { ...acc, [n]: { _id: RED.util.evaluateNodeProperty(v, vt, this, msg) } };
+							value = { _id: RED.util.evaluateNodeProperty(v, vt, this, msg) };
 						}
+						break;
 					case 'richText':
 						if (STANDARD_TYPES.includes(vt)) {
-							return { ...acc, [n]: RED.util.evaluateNodeProperty(v, vt, this, msg) };
+							value = RED.util.evaluateNodeProperty(v, vt, this, msg);
 						} else {
-							return { ...acc, [n]: v };
+							value = v;
 						}
+						break;
 					case 'money':
 						if (STANDARD_TYPES.includes(vt)) {
-							return { ...acc, [n]: { value: Number(RED.util.evaluateNodeProperty(v, vt, this, msg)) } };
+							value = { value: Number(RED.util.evaluateNodeProperty(v, vt, this, msg)) };
 						} else {
-							return {
-								...acc,
-								[n]: {
-									currency: vt,
-									value: Number(v)
-								}
+							value = {
+								currency: vt,
+								value: Number(v)
 							};
 						}
+						break;
 					case 'boolean':
-						return { ...acc, [n]: /^true$/i.test(RED.util.evaluateNodeProperty(v, vt, this, msg)) };
+						value = /^true$/i.test(RED.util.evaluateNodeProperty(v, vt, this, msg));
+						break;
 					case 'picklist':
 						if (STANDARD_TYPES.includes(vt)) {
-							return { ...acc, [n]: RED.util.evaluateNodeProperty(v, vt, this, msg) };
+							value = RED.util.evaluateNodeProperty(v, vt, this, msg);
+						} else {
+							value = v;
 						}
-						return { ...acc, [n]: v };
+						break;
 					case 'address':
 					case 'personName':
 						if (vt === 'form') {
@@ -79,12 +82,19 @@ module.exports = function(RED) {
 								}),
 								{}
 							);
-							return { ...acc, [n]: result };
+							value = result;
+						} else {
+							value = JSON.parse(RED.util.evaluateNodeProperty(v, vt, this, msg));
 						}
-						return { ...acc, [n]: JSON.parse(RED.util.evaluateNodeProperty(v, vt, this, msg)) };
+						break;
 					default:
-						return { ...acc, [n]: RED.util.evaluateNodeProperty(v, vt, this, msg) };
+						value = RED.util.evaluateNodeProperty(v, vt, this, msg);
+						break;
 				}
+				if (/true/i.test(il) && !Array.isArray(value)) {
+					return { ...acc, [n]: [value] };
+				}
+				return { ...acc, [n]: value };
 			}, {});
 
 			const handleKonectyResponse = ({ success, data, errors }) => {

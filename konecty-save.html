@@ -90,10 +90,13 @@
 
 	function getLabel(field) {
 		var language = navigator.language || 'en';
-		if (language === 'pt-BR') {
+		if (field && field.label && field.label.pt_BR && language === 'pt-BR') {
 			return field.label.pt_BR;
+		} else if (field && field.label && field.label.en) {
+			return field.label.en;
+		} else {
+			return '';
 		}
-		return field.label.en;
 	}
 
 	function buildFieldList(node) {
@@ -150,6 +153,10 @@
 									$('<input/>', { class: 'node-input-field-type', type: 'hidden' })
 										.appendTo(row)
 										.val(field.type);
+
+									$('<input/>', { class: 'node-input-field-isList', type: 'hidden' })
+										.appendTo(row)
+										.val(!!field.isList);
 
 									switch (field.type) {
 										case 'text':
@@ -514,6 +521,7 @@
 			var dataRow = $(this);
 			var fieldName = $('.node-input-field-id', dataRow).val();
 			var fieldType = $('.node-input-field-type', dataRow).val();
+			var fieldIsList = $('.node-input-field-isList', dataRow).val();
 
 			var valueInput = dataRow.find('.node-input-field-value');
 			var valueType = valueInput.typedInput('type');
@@ -545,7 +553,8 @@
 				n: fieldName,
 				t: fieldType,
 				vt: valueType,
-				v: valueValue
+				v: valueValue,
+				il: fieldIsList
 			});
 		});
 

@@ -252,100 +252,123 @@
 		let doc = $('#node-input-doc').val();
 		let termSelect = $('#konecty-search-term-' + index);
 		let fields = kondata[doc] ? kondata[doc]['fields'] : [];
+		if (fields == null) {
+			return;
+		}
 		let ff = fields.map(f => {
 			return { type: f.type, value: f.name, label: f.label.pt_BR };
 		});
 		ff = sortArrayByAttribute(ff, 'label');
 		for (f of ff) {
-			if (f.type == 'address') {
-				termSelect.append(
-					$('<option></option>')
-						.attr('value', 'address.country')
-						.attr('data-type', 'address.country')
-						.text('Endereço > País')
-				);
-				termSelect.append(
-					$('<option></option>')
-						.attr('value', 'address.city')
-						.attr('data-type', 'address.city')
-						.text('Endereço > Cidade')
-				);
-				termSelect.append(
-					$('<option></option>')
-						.attr('value', 'address.state')
-						.attr('data-type', 'address.state')
-						.text('Endereço > UF')
-				);
-				termSelect.append(
-					$('<option></option>')
-						.attr('value', 'address.district')
-						.attr('data-type', 'address.district')
-						.text('Endereço > Cidade')
-				);
-				termSelect.append(
-					$('<option></option>')
-						.attr('value', 'address.place')
-						.attr('data-type', 'address.place')
-						.text('Endereço > Logradouro')
-				);
-				termSelect.append(
-					$('<option></option>')
-						.attr('value', 'address.number')
-						.attr('data-type', 'address.number')
-						.text('Endereço > Número')
-				);
-				termSelect.append(
-					$('<option></option>')
-						.attr('value', 'address.postalCode')
-						.attr('data-type', 'address.postalCode')
-						.text('Endereço > CEP')
-				);
-				termSelect.append(
-					$('<option></option>')
-						.attr('value', 'address.complement')
-						.attr('data-type', 'address.complement')
-						.text('Endereço > Complemento')
-				);
-				termSelect.append(
-					$('<option></option>')
-						.attr('value', 'address.geolocation.0')
-						.attr('data-type', 'address.geolocation.0')
-						.text('Endereço > Geolocalização 1')
-				);
-				termSelect.append(
-					$('<option></option>')
-						.attr('value', 'address.geolocation.1')
-						.attr('data-type', 'address.geolocation.1')
-						.text('Endereço > Geolocalização 2')
-				);
-			} else if (f.type == 'email') {
-				termSelect.append(
-					$('<option></option>')
-						.attr('value', f.value + '.address')
-						.attr('data-type', 'email.address')
-						.text('Email > Endereço')
-				);
-			} else if (f.type == 'phone') {
-				termSelect.append(
-					$('<option></option>')
-						.attr('value', f.value + '.phoneNumber')
-						.attr('data-type', 'phone.phoneNumber')
-						.text('Telefone > Número')
-				);
-			} else if (f.type == 'personName') {
-				termSelect.append(
-					$('<option></option>')
-						.attr('value', f.value + '.full')
-						.attr('data-type', 'personName.full')
-						.text('Nome > Completo')
-				);
-			} else {
-				termSelect.append(
-					$('<option></option>')
-						.attr('value', f.value)
-						.attr('data-type', f.type)
-						.text(f.label)
-				);
+			switch (f.type) {
+				case 'address':
+					termSelect.append(
+						$('<option></option>')
+							.attr('value', 'address.country')
+							.attr('data-type', 'address.country')
+							.text('Endereço > País')
+					);
+					termSelect.append(
+						$('<option></option>')
+							.attr('value', 'address.city')
+							.attr('data-type', 'address.city')
+							.text('Endereço > Cidade')
+					);
+					termSelect.append(
+						$('<option></option>')
+							.attr('value', 'address.state')
+							.attr('data-type', 'address.state')
+							.text('Endereço > UF')
+					);
+					termSelect.append(
+						$('<option></option>')
+							.attr('value', 'address.district')
+							.attr('data-type', 'address.district')
+							.text('Endereço > Cidade')
+					);
+					termSelect.append(
+						$('<option></option>')
+							.attr('value', 'address.place')
+							.attr('data-type', 'address.place')
+							.text('Endereço > Logradouro')
+					);
+					termSelect.append(
+						$('<option></option>')
+							.attr('value', 'address.number')
+							.attr('data-type', 'address.number')
+							.text('Endereço > Número')
+					);
+					termSelect.append(
+						$('<option></option>')
+							.attr('value', 'address.postalCode')
+							.attr('data-type', 'address.postalCode')
+							.text('Endereço > CEP')
+					);
+					termSelect.append(
+						$('<option></option>')
+							.attr('value', 'address.complement')
+							.attr('data-type', 'address.complement')
+							.text('Endereço > Complemento')
+					);
+					termSelect.append(
+						$('<option></option>')
+							.attr('value', 'address.geolocation.0')
+							.attr('data-type', 'address.geolocation.0')
+							.text('Endereço > Geolocalização 1')
+					);
+					termSelect.append(
+						$('<option></option>')
+							.attr('value', 'address.geolocation.1')
+							.attr('data-type', 'address.geolocation.1')
+							.text('Endereço > Geolocalização 2')
+					);
+					break;
+				case 'email':
+					termSelect.append(
+						$('<option></option>')
+							.attr('value', f.value + '.address')
+							.attr('data-type', 'email.address')
+							.text('Email > Endereço')
+					);
+					break;
+				case 'phone':
+					termSelect.append(
+						$('<option></option>')
+							.attr('value', f.value + '.phoneNumber')
+							.attr('data-type', 'phone.phoneNumber')
+							.text('Telefone > Número')
+					);
+					break;
+				case 'personName':
+					termSelect.append(
+						$('<option></option>')
+							.attr('value', f.value + '.full')
+							.attr('data-type', 'personName.full')
+							.text('Nome > Completo')
+					);
+					break;
+				case 'lookup':
+					termSelect.append(
+						$('<option></option>')
+							.attr('value', f.value)
+							.attr('data-type', f.type)
+							.text(f.label)
+					);
+					termSelect.append(
+						$('<option></option>')
+							.attr('value', f.value + '._id')
+							.attr('data-type', 'lookup._id')
+							.text(f.label + ' > id')
+					);
+					break;
+				default:
+					termSelect.append(
+						$('<option></option>')
+							.attr('value', f.value)
+							.attr('data-type', f.type)
+							.text(f.label)
+					);
+					break;
 			}
 		}
 		$('#konecty-search-value1-' + index).typedInput();
@@ -592,9 +615,9 @@
 		inputs: 1,
 		outputs: 1,
 		icon: 'konecty.png',
-		paletteLabel: 'Retrive Documents',
+		paletteLabel: 'Retrieve Documents',
 		label: function() {
-			return this.name || 'Retrive Documents';
+			return this.name || 'Retrieve Documents';
 		}
 	});
 </script>
