@@ -4,6 +4,10 @@
 				<input type="text" id="node-input-server" placeholder="Konecty Server">
 		</div>
 		<div class="form-row">
+			<label for="node-input-token"><i class="icon-key"></i> <span data-i18n="konecty-save.label.token"></span></label>
+			<input type="text" id="node-input-token" data-i18n="[placeholder]konecty-save.label.token">
+		</div>
+		<div class="form-row">
 				<label for="node-input-name"><i class="fa fa-tag"></i>  <span data-i18n="konecty-save.label.name"></span></label>
 				<input type="text" id="node-input-name" placeholder="Name">
 		</div>
@@ -499,6 +503,7 @@
 
 	function oneditsave() {
 		var node = this;
+		node.tokenType = $('#node-input-token').typedInput('type');
 		var idRows = $('#node-input-code-container').editableList('items');
 		var dataRows = $('#node-input-field-container').editableList('items');
 
@@ -563,6 +568,11 @@
 
 	function oneditprepare() {
 		const node = this;
+		$('#node-input-token').typedInput({
+			default: node.tokenType || 'str',
+			types: ['msg', 'flow', 'global', 'env', 'str']
+		});
+
 		if (node.ids && typeof node.ids === 'string') {
 			node.ids = JSON.parse(node.ids);
 		}
@@ -719,7 +729,10 @@
 			document: { value: '' },
 			action: { value: 'create', required: true },
 			ids: { value: [] },
-			data: { value: [] }
+			data: { value: [] },
+
+			token: { value: '', validate: RED.validators.typedInput('tokenType') },
+			tokenType: { value: 'str' }
 		},
 		inputs: 1,
 		outputs: 2,

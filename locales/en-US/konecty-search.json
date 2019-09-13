@@ -1,7 +1,8 @@
 {
 	"konecty-search": {
 		"label": {
-			"default-label": "Retrive Documents"
+			"default-label": "Retrive Documents",
+			"token": "User Token"
 		}
 	}
 }

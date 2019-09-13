@@ -4,6 +4,10 @@
 				<input type="text" id="node-input-server" placeholder="Konecty Server">
 		</div>
 		<div class="form-row">
+			<label for="node-input-token"><i class="icon-key"></i> <span data-i18n="konecty-queue.label.token"></span></label>
+			<input type="text" id="node-input-token" data-i18n="[placeholder]konecty-queue.label.token">
+		</div>
+		<div class="form-row">
 				<label for="node-input-name"><i class="fa fa-tag"></i>  <span data-i18n="konecty-queue.label.name"></span></label>
 				<input type="text" id="node-input-name" data-i18n="[placeholder]konecty-queue.label.name">
 		</div>
@@ -26,7 +30,10 @@
 			name: { value: '' },
 			queueType: { value: 'msg' },
 			queue: { value: '' },
-			queueData: { value: '' }
+			queueData: { value: '' },
+
+			token: { value: '', validate: RED.validators.typedInput('tokenType') },
+			tokenType: { value: 'str' }
 		},
 		inputs: 1,
 		outputs: 2,
@@ -40,6 +47,11 @@
 		},
 		oneditprepare: function() {
 			const node = this;
+			$('#node-input-token').typedInput({
+				default: node.tokenType || 'str',
+				types: ['msg', 'flow', 'global', 'env', 'str']
+			});
+
 			$('#node-input-queue')
 				.typedInput({
 					default: node.queueType || 'msg',
@@ -90,6 +102,7 @@
 		},
 		oneditsave: function() {
 			const node = this;
+			node.tokenType = $('#node-input-token').typedInput('type');
 			node.queueType = $('#node-input-queue').typedInput('type');
 			if (node.queueType === 'form') {
 				node.queueData = JSON.stringify({

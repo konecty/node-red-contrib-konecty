@@ -9,7 +9,15 @@ module.exports = function(RED) {
 			const { host, key } = node.server;
 			const { queueType, queue, queueData } = config;
 
-			const apiInstance = api({ host, key });
+			let token = key;
+			if (config.token && config.tokenType) {
+				const userToken = RED.util.evaluateNodeProperty(config.token, config.tokenType, this, msg);
+				if (/[^ ]+/.test(userToken)) {
+					token = userToken;
+				}
+			}
+
+			const apiInstance = api({ host, key: token });
 
 			let id;
 			if (queueType === 'form') {

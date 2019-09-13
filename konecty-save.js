@@ -10,7 +10,15 @@ module.exports = function(RED) {
 
 			const { document } = config;
 
-			const apiInstance = api({ host, key });
+			let token = key;
+			if (config.token && config.tokenType) {
+				const userToken = RED.util.evaluateNodeProperty(config.token, config.tokenType, this, msg);
+				if (/[^ ]+/.test(userToken)) {
+					token = userToken;
+				}
+			}
+
+			const apiInstance = api({ host, key: token });
 
 			var data = JSON.parse(config.data) || msg.payload;
 

@@ -12,7 +12,8 @@
 			"extraFields": "Extra data",
 
 			"autocomplete": "Find",
-			"running": "Creating a contact..."
+			"running": "Creating a contact...",
+			"token": "User Token"
 		},
 		"output": {
 			"success": "Success",

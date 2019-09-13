@@ -11,7 +11,8 @@
 			"form": "Form",
 			"autocomplete": "Find",
 			"editor": "Editor",
-			"default-label": "Save Document"
+			"default-label": "Save Document",
+			"token": "User Token"
 		},
 		"output": {
 			"success": "Success",

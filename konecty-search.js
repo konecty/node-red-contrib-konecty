@@ -54,11 +54,20 @@ module.exports = function(RED) {
 			if (root_url.endsWith('/')) {
 				root_url = root_url.slice(0, root_url.length - 1);
 			}
+
+			let token = node.server.key;
+			if (config.token && config.tokenType) {
+				const userToken = RED.util.evaluateNodeProperty(config.token, config.tokenType, this, msg);
+				if (/[^ ]+/.test(userToken)) {
+					token = userToken;
+				}
+			}
+
 			node.status({ fill: 'blue', shape: 'ring', text: 'searching...' });
 			const axios = axios_instance.create({
 				baseURL: root_url,
 				headers: {
-					Authorization: node.server.key
+					Authorization: token
 				}
 			});
 			axios

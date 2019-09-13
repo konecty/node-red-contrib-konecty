@@ -10,7 +10,8 @@
 			"extraFields": "Extra data",
 
 			"autocomplete": "Find",
-			"running": "Creating a opportunity..."
+			"running": "Creating a opportunity...",
+			"token": "User Token"
 		},
 		"output": {
 			"success": "Success",

@@ -1,6 +1,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" charset="utf-8"></script>
 
 <script type="text/x-red" data-template-name="konecty-search">
+	<!--2-->
 	<input type="hidden" id="node-input-filter">
 	<div class="form-row">
 	  <label for="node-input-name"><i class="icon-tag"></i> Name</label>
@@ -10,6 +11,11 @@
 		<label for="node-input-server"><i class="fa fa-globe"></i> Konecty</label>
 		<input type="text" id="node-input-server" placeholder="Konecty Server">
 	</div>
+	<div class="form-row">
+	  <label for="node-input-token"><i class="icon-key"></i> <span data-i18n="konecty-search.label.token"></span></label>
+	  <input type="text" id="node-input-token" data-i18n="[placeholder]konecty-search.label.token">
+	</div>
+
 	<div class="form-row form-row-search" style="display:none">
 	  <label for="node-input-doc"><i class="fa fa-dot-circle-o"></i> <span>Document</span></label>
 	  <select id="node-input-doc">
@@ -20,12 +26,6 @@
 	  <ol id="node-input-rule-container" class="red-ui-editableList-list ui-sortable" style="min-height: 200px; min-width: 450px; height: auto;">
 	  </ol>
 	</div>
-</script>
-
-<script type="text/x-red" data-help-name="konecty-search">
-	<p>A full featured search node for Konecty CRM documents.</p>
-	<p>For the first time, you need to fill data, click save and then reopen node to be able to add filters.</p>
-	<p>Use "YYYY-MM-DD" and "YYYY-MM-DD HH:MM" formats for <em>date</em> and <em>datetime</em> filters.</p>
 </script>
 
 <script type="text/javascript">
@@ -563,7 +563,9 @@
 			server: { value: '', type: 'konecty-server' },
 			name: { value: '' },
 			doc: { value: '' },
-			filter: { value: '' }
+			filter: { value: '' },
+			token: { value: '', validate: RED.validators.typedInput('tokenType') },
+			tokenType: { value: 'str' }
 		},
 		credentials: {
 			url: { value: '', required: true },
@@ -572,6 +574,11 @@
 		},
 		oneditprepare: function() {
 			const node = this;
+
+			$('#node-input-token').typedInput({
+				default: node.tokenType || 'str',
+				types: ['msg', 'flow', 'global', 'env', 'str']
+			});
 
 			$('#node-input-server').on('change', function() {
 				const server = $('#node-input-server').val();
@@ -610,6 +617,8 @@
 			});
 		},
 		oneditsave: function() {
+			const node = this;
+			node.tokenType = $('#node-input-token').typedInput('type');
 			saveKonectyFilter();
 		},
 		inputs: 1,

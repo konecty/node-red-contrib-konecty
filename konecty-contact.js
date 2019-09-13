@@ -66,7 +66,15 @@ module.exports = function(RED) {
 				contactData.extraFields = extraFieldsData;
 			}
 
-			const apiInstance = api({ host, key });
+			let token = key;
+			if (config.token && config.tokenType) {
+				const userToken = RED.util.evaluateNodeProperty(config.token, config.tokenType, this, msg);
+				if (/[^ ]+/.test(userToken)) {
+					token = userToken;
+				}
+			}
+
+			const apiInstance = api({ host, key: token });
 
 			if (Object.keys(contactData).length === 0) {
 				node.warn(RED._('konecty-contact.errors.invalid-data'));
