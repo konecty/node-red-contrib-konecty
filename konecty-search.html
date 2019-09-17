@@ -93,8 +93,8 @@
 		'address.country': ['exists', 'equals', 'not_equals'],
 		'address.city': ['exists', 'equals', 'not_equals', 'in', 'not_in', 'contains', 'not_contains', 'starts_with', 'end_with'],
 		'address.state': ['exists', 'equals', 'not_equals', 'in', 'not_in'],
-		'address.district': ['exists', 'equals', 'not_equals', 'in', 'not_in'],
-		'address.place': ['exists', 'equals', 'not_equals', 'contains'],
+		'address.district': ['exists', 'equals', 'not_equals', 'in', 'not_in', 'starts_with', 'end_with'],
+		'address.place': ['exists', 'equals', 'not_equals', 'contains', 'starts_with', 'end_with'],
 		'address.number': ['exists', 'equals', 'not_equals'],
 		'address.postalCode': ['exists', 'equals', 'not_equals', 'contains'],
 		'address.complement': ['exists', 'equals', 'not_equals', 'contains'],
@@ -282,15 +282,15 @@
 					);
 					termSelect.append(
 						$('<option></option>')
-							.attr('value', 'address.district')
-							.attr('data-type', 'address.district')
-							.text('Endereço > Cidade')
-					);
-					termSelect.append(
-						$('<option></option>')
 							.attr('value', 'address.place')
 							.attr('data-type', 'address.place')
 							.text('Endereço > Logradouro')
+					);
+					termSelect.append(
+						$('<option></option>')
+							.attr('value', 'address.district')
+							.attr('data-type', 'address.district')
+							.text('Endereço > Bairro')
 					);
 					termSelect.append(
 						$('<option></option>')
