@@ -1,7 +1,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" charset="utf-8"></script>
 
 <script type="text/x-red" data-template-name="konecty-search">
-	<!--2-->
+	<!--5-->
 	<input type="hidden" id="node-input-filter">
 	<div class="form-row">
 	  <label for="node-input-name"><i class="icon-tag"></i> Name</label>
@@ -187,7 +187,7 @@
 	}
 
 	// adds a filter in the list
-	function addFilter(row, index, data, kondata) {
+	function addFilter(row, index, data, kondata, node) {
 		kondata = kondata || data; // to work with editableList when calling addItem programatically
 		$(row).html(
 			`
@@ -259,6 +259,13 @@
 			return { type: f.type, value: f.name, label: f.label.pt_BR };
 		});
 		ff = sortArrayByAttribute(ff, 'label');
+
+		termSelect.append(
+			$('<option></option>')
+				.attr('value', '_id')
+				.attr('data-type', 'text')
+				.text(node._('konecty-search.label.id'))
+		);
 		for (f of ff) {
 			switch (f.type) {
 				case 'address':
@@ -347,6 +354,7 @@
 							.text('Nome > Completo')
 					);
 					break;
+				case 'inheritLookup':
 				case 'lookup':
 					termSelect.append(
 						$('<option></option>')
@@ -373,7 +381,7 @@
 		}
 		$('#konecty-search-value1-' + index).typedInput();
 		$('#konecty-search-value2-' + index).typedInput();
-		let types = ['msg', 'flow', 'global', 'str', 'num', 'bool', 'date'];
+		let types = ['msg', 'flow', 'global', 'str', 'num', 'bool', 'date', 'json', 'jsonata'];
 		$('#konecty-search-value1-' + index).typedInput('types', types);
 		$('#konecty-search-value2-' + index).typedInput('types', types);
 	}
@@ -517,14 +525,14 @@
 	}
 
 	// init widgets
-	function initKonectySearch(kondata, doc, filter) {
+	function initKonectySearch(kondata, doc, filter, node) {
 		loadDocuments(kondata, doc);
 		$('.form-row-search').show();
 		$('#node-input-rule-container').editableList({
 			sortable: true,
 			removable: true,
 			addItem: function(row, index, data) {
-				addFilter(row, index, data, kondata);
+				addFilter(row, index, data, kondata, node);
 			}
 		});
 		loadFilters(kondata, filter);
@@ -589,7 +597,7 @@
 					url: 'konecty-server/' + server + '/menu',
 					type: 'GET',
 					success: function(kondata) {
-						initKonectySearch(kondata, node.doc, node.filter);
+						initKonectySearch(kondata, node.doc, node.filter, node);
 					},
 					error: function(jqXHR, textStatus, errorThrown) {
 						if (jqXHR.status == 404) {

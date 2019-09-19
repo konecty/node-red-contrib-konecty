@@ -2,7 +2,8 @@
 	"konecty-search": {
 		"label": {
 			"default-label": "Retrive Documents",
-			"token": "User Token"
+			"token": "User Token",
+			"id": "Unique identifier"
 		}
 	}
 }
