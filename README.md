@@ -1,6 +1,7 @@
 ![Konecty](logo-konecty.png)
 
 # Konecty Integration Nodes
+[![npm version](https://badge.fury.io/js/node-red-contrib-konecty.svg)](https://badge.fury.io/js/node-red-contrib-konecty)
 
 With these nodes, you can visually create full-featured flows to improve your business.
 
