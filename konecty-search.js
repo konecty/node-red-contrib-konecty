@@ -2,6 +2,8 @@ const axios_instance = require('axios');
 const moment = require('moment');
 
 function parseValue(msg, value, type) {
+	return RED.util.evaluateNodeProperty(config.product, config.productType, this, msg);
+
 	if (type == 'msg')
 		value = value.split('.').reduce((o, k) => {
 			return o[k];
@@ -16,6 +18,7 @@ function parseValue(msg, value, type) {
 
 module.exports = function(RED) {
 	function KonectySearchNode(config) {
+		
 		RED.nodes.createNode(this, config);
 		let node = this;
 		let flow = node.context().flow;
@@ -27,8 +30,12 @@ module.exports = function(RED) {
 			let filter = JSON.parse(config.filter);
 			for (let i = 0, j = filter.conditions.length; i < j; i++) {
 				let c = filter.conditions[i];
-				c.value1 = parseValue(msg, c.value1, c.value1Type);
-				c.value2 = parseValue(msg, c.value2, c.value2Type);
+				c.value1 = RED.util.evaluateNodeProperty(c.value1, c.value1Type, this, msg);
+
+				if (!!c.value2) {
+					c.value2 = RED.util.evaluateNodeProperty(c.value2, c.value2Type, this, msg);
+				}
+				
 				if (c.operator === 'lookup') {
 					c.term += '._id';
 					c.operator = 'equals';
@@ -49,6 +56,9 @@ module.exports = function(RED) {
 					c.value = c.value1;
 				}
 			}
+			
+			// Ensure that the condition will have value property
+			filter.conditions = filter.conditions.filter(item => item.value);
 
 			let root_url = node.server.host;
 			if (root_url.endsWith('/')) {
