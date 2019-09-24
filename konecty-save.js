@@ -29,7 +29,7 @@ module.exports = function(RED) {
 				return;
 			}
 
-			const body = data.reduce((acc, { n, t, vt, v, il }) => {
+			let body = data.reduce((acc, { n, t, vt, v, il }) => {
 				let value;
 				switch (t) {
 					case 'email':
@@ -103,6 +103,26 @@ module.exports = function(RED) {
 					return { ...acc, [n]: [value] };
 				}
 				return { ...acc, [n]: value };
+			}, {});
+			
+			// Remove null-like values from body
+			body = Object.keys(body).reduce((accum, key) => {
+				const item = body[key];
+				if (item == null) {
+					return accum;
+				}
+				if (Array.isArray(item)) {
+					const first = item[0];
+					if (first == null || (first.__proto__ === Object.prototype && first.hasOwnProperty('_id') && first._id == null)) {
+						return accuml
+					}
+				}
+				if (item.__proto__ === Object.prototype) {
+					if (item.hasOwnProperty('_id') && item._id == null) {
+						return accum;
+					}
+				}
+				return Object.assign(accum, { [key]: item });
 			}, {});
 
 			const handleKonectyResponse = ({ success, data, errors }) => {

@@ -35,7 +35,7 @@ module.exports = function(RED) {
 			node.status({ fill: 'blue', shape: 'ring', text: RED._('konecty-queue.label.running') });
 			apiInstance
 				.getNextOnQueue(id)
-				.then(({ success, user: { user } }) => {
+				.then(({ success, user }) => {
 					if (success) {
 						node.send([
 							{
