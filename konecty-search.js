@@ -80,11 +80,16 @@ module.exports = function(RED) {
 					Authorization: token
 				}
 			});
+
+			const fields = JSON.parse(config.projections);
+
 			axios
-				.get('/rest/data/' + config.doc.split(':')[1] + '/find', {
+				.get(`/rest/data/${config.doc.split(':')[1]}/find`, {
 					params: {
 						filter: JSON.stringify(filter),
-						limit: 0
+						limit: config.limit && Number(config.limit) || 0,
+						sort: `[{"property":"_id","direction":"ASC"}]`,
+						fields: Array.isArray(fields) && fields.length > 0 ? fields.join() : undefined
 					}
 				})
 				.then(function(response) {
