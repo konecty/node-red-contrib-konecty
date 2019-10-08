@@ -620,6 +620,9 @@
 		});
 		$('#node-input-server').change(function() {
 			const server = $('#node-input-server').val();
+			if (server === '_ADD_') {
+				return;
+			}
 			$.ajax({
 				url: 'konecty-server/' + server + '/documents',
 				type: 'GET',
