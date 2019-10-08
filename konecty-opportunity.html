@@ -64,7 +64,7 @@
 		}
 	}
 
-	function createAutocompleteField(node, field, type, value, data) {
+	function createOpportunityAutocompleteField(node, field, type, value, data) {
 		$('#node-input-' + field)
 			.typedInput({
 				default: type || 'form',
@@ -182,9 +182,9 @@
 
 			createField('#node-input-product', node.productType, node.product, ['str', 'num']);
 
-			createAutocompleteField(node, 'contact', node.contactType, node.contact, node.contactData);
-			createAutocompleteField(node, 'user', node.userType, node.user, node.userData);
-			createAutocompleteField(node, 'campaign', node.campaignType, node.campaign, node.campaignData);
+			createOpportunityAutocompleteField(node, 'contact', node.contactType, node.contact, node.contactData);
+			createOpportunityAutocompleteField(node, 'user', node.userType, node.user, node.userData);
+			createOpportunityAutocompleteField(node, 'campaign', node.campaignType, node.campaign, node.campaignData);
 
 			$('#node-input-extraFields')
 				.css('width', '70%')

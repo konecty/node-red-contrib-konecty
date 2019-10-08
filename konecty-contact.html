@@ -70,7 +70,7 @@
 		$(id).typedInput('value', value);
 	}
 
-	function createAutocompleteField(node, field, type, value, data) {
+	function createContactAutocompleteField(node, field, type, value, data) {
 		$('#node-input-' + field)
 			.typedInput({
 				default: type || 'form',
@@ -185,9 +185,9 @@
 			createStringField('#node-input-fullname', node.fullnameType, node.fullname);
 			createStringField('#node-input-email', node.emailType, node.email);
 			createStringField('#node-input-phoneNumber', node.phoneNumberType, node.phoneNumber);
-			createAutocompleteField(node, 'user', node.userType, node.user, node.userData);
-			createAutocompleteField(node, 'campaign', node.campaignType, node.campaign, node.campaignData);
-			createAutocompleteField(node, 'queue', node.queueType, node.queue, node.queueData);
+			createContactAutocompleteField(node, 'user', node.userType, node.user, node.userData);
+			createContactAutocompleteField(node, 'campaign', node.campaignType, node.campaign, node.campaignData);
+			createContactAutocompleteField(node, 'queue', node.queueType, node.queue, node.queueData);
 
 			$('#node-input-extraFields')
 				.css('width', '70%')
