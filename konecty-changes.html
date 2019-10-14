@@ -1,0 +1,108 @@
+<script type="text/x-red" data-template-name="konecty-changes">
+	<div class="form-row">
+		<label for="node-input-server"><i class="fa fa-globe"></i> Konecty</label>
+		<input type="text" id="node-input-server" placeholder="Konecty Server">
+	</div>
+	<div class="form-row">
+		<label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+		<input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+	</div>
+	<div class="form-row">
+		<label for="node-input-document"><i class="fa fa-file"></i> <span data-i18n="konecty-changes.label.document"></span></label>
+		<select id="node-input-document" style="width:70%">
+		</select>
+	</div>
+</script>
+
+<script type="text/javascript">
+	RED.nodes.registerType('konecty-changes', {
+		category: 'Konecty',
+		color: '#68B7E0',
+		defaults: {
+			server: { value: '', type: 'konecty-server' },
+			name: { value: '' },
+			document: { value: '' }
+		},
+		inputs: 0,
+		outputs: 1,
+		outputLabels: [RED._('konecty-changes.label.eventData')],
+		icon: 'konecty.png',
+		paletteLabel: 'Document changes',
+		label: function() {
+			return this.name || 'Document changes';
+		},
+		oneditprepare: function() {
+			const node = this;
+			$('#node-input-server').change(function() {
+				const server = $('#node-input-server').val();
+				if (server === '_ADD_') {
+					return;
+				}
+				$.ajax({
+					url: 'konecty-server/' + server + '/documents',
+					type: 'GET',
+					success: function(docs) {
+						var inputDocument = $('#node-input-document');
+						inputDocument
+							.find('optgroup')
+							.remove()
+							.end();
+						var group = $('<optgroup/>', { label: 'Konecty Documents' }).appendTo(inputDocument);
+
+						Array.from(docs)
+							.sort((a, b) => {
+								const labelA = getLabel(a);
+								const labelB = getLabel(b);
+								if (labelA > labelB) {
+									return 1;
+								}
+								if (labelA < labelB) {
+									return -1;
+								}
+								return 0;
+							})
+							.forEach(({ name, label }) => {
+								group.append(
+									$('<option></option>')
+										.val(name)
+										.text(getLabel({ label }))
+								);
+							});
+						if (node.document) {
+							inputDocument.val(node.document);
+						} else {
+							inputDocument.val(null);
+						}
+					},
+					error: function(jqXHR, textStatus, errorThrown) {
+						if (jqXHR.status == 404) {
+							RED.notify(
+								node._('node-red:common.notification.error', {
+									message: node._('node-red:common.notification.errors.not-deployed')
+								}),
+								'error'
+							);
+						} else if (jqXHR.status == 500) {
+							RED.notify(node._('node-red:common.notification.error', { message: node._('inject.errors.failed') }), 'error');
+						} else if (jqXHR.status == 0) {
+							RED.notify(
+								node._('node-red:common.notification.error', {
+									message: node._('node-red:common.notification.errors.no-response')
+								}),
+								'error'
+							);
+						} else {
+							RED.notify(
+								node._('node-red:common.notification.error', {
+									message: node._('node-red:common.notification.errors.unexpected', { status: jqXHR.status, message: textStatus })
+								}),
+								'error'
+							);
+						}
+					}
+				});
+			});
+		},
+		oneditsave: function() {}
+	});
+</script>

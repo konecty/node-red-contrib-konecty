@@ -20,11 +20,14 @@
 			"konecty-save": "konecty-save.js",
 			"konecty-queue": "konecty-queue.js",
 			"konecty-contact": "konecty-contact.js",
-			"konecty-opportunity": "konecty-opportunity.js"
+			"konecty-opportunity": "konecty-opportunity.js",
+			"konecty-changes": "konecty-changes.js"
 		}
 	},
 	"dependencies": {
 		"axios": "^0.19.0",
-		"moment": "^2.24.0"
+		"ejson": "^2.2.0",
+		"moment": "^2.24.0",
+		"ws": "^7.1.2"
 	}
 }

@@ -1,0 +1,15 @@
+{
+	"konecty-changes": {
+		"label": {
+			"name": "Name",
+			"document": "Document",
+			"running": "Finding next...",
+			"eventData": "Event Data"
+		},
+		"errors": {
+			"invalid-data": "Input data is missing",
+			"error-processing": "Errors processing request: __message__",
+			"connection-broken": "Connection Broken"
+		}
+	}
+}
