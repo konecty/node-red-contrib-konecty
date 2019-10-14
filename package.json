@@ -21,7 +21,8 @@
 			"konecty-queue": "konecty-queue.js",
 			"konecty-contact": "konecty-contact.js",
 			"konecty-opportunity": "konecty-opportunity.js",
-			"konecty-changes": "konecty-changes.js"
+			"konecty-changes": "konecty-changes.js",
+			"konecty-message": "konecty-message.js"
 		}
 	},
 	"dependencies": {
