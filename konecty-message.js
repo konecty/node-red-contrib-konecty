@@ -28,12 +28,14 @@ module.exports = function(RED) {
 				return;
             }
             
-            data.unshift({ n: "type", type: "picklist", vt: config.originType, v: config.origin, il: false });
-            data.unshift({ n: "subject", type: "text", vt: config.subjectType, v: config.subject, il: false });
-            data.unshift({ n: "body", type: "richText", vt: config.messageType, v: config.message, il: false });
+            data.unshift({ n: "type", t: "picklist", vt: config.originType, v: config.origin, il: false });
+            data.unshift({ n: "subject", t: "text", vt: config.subjectType, v: config.subject, il: false });
+            data.unshift({ n: "body", t: "richText", vt: config.messageType, v: config.message, il: false });
 
-            if (config.to && config.to.length > 0)
-                data.unshift({ n: "to", type: "text", vt: config.toType, v: config.to, il: false });
+            if (config.to && config.to.length > 0) {
+				data.unshift({ n: "to", t: "text", vt: config.toType, v: config.to, il: false });
+				data.unshift({ n: "status", t: "picklist", vt: 'opt', v: 'Enviar', il: false });
+			}
 
 			let body = data.reduce((acc, { n, t, vt, v, il }) => {
 				let value;
@@ -110,8 +112,6 @@ module.exports = function(RED) {
 				}
 				return { ...acc, [n]: value };
 			}, {});
-            console.log("TCL: KonectyMessageNode -> data", data)
-            console.log("TCL: KonectyMessageNode -> data", data)
 			
 			// Remove null-like values from body
 			body = Object.keys(body).reduce((accum, key) => {
