@@ -1,14 +1,13 @@
 const api = require('./api');
 const STANDARD_TYPES = ['str', 'num', 'json', 're', 'date', 'bin', 'msg', 'flow', 'global', 'bool', 'jsonata', 'env'];
+
 module.exports = function(RED) {
-	function KonectySaveNode(config) {
+	function KonectyMessageNode(config) {
 		RED.nodes.createNode(this, config);
 		const node = this;
 		node.server = RED.nodes.getNode(config.server);
 		node.on('input', function(msg) {
 			const { host, key } = node.server;
-
-			const { document } = config;
 
 			let token = key;
 			if (config.token && config.tokenType) {
@@ -20,13 +19,22 @@ module.exports = function(RED) {
 
 			const apiInstance = api({ host, key: token });
 
-			var data = JSON.parse(config.data) || msg.payload;
+            var data = JSON.parse(config.extraFields) || msg.payload;
 
 			node.status({});
 			if (!Array.isArray(data) || data.length === 0) {
-				node.warn(RED._('konecty-save.errors.invalid-data'));
-				node.status({ fill: 'red', shape: 'ring', text: 'konecty-save.errors.invalid-data' });
+				node.warn(RED._('konecty-message.errors.invalid-data'));
+				node.status({ fill: 'red', shape: 'ring', text: 'konecty-message.errors.invalid-data' });
 				return;
+            }
+            
+            data.unshift({ n: "type", t: "picklist", vt: config.originType, v: config.origin, il: false });
+            data.unshift({ n: "subject", t: "text", vt: config.subjectType, v: config.subject, il: false });
+            data.unshift({ n: "body", t: "richText", vt: config.messageType, v: config.message, il: false });
+
+            if (config.to && config.to.length > 0) {
+				data.unshift({ n: "to", t: "text", vt: config.toType, v: config.to, il: false });
+				data.unshift({ n: "status", t: "picklist", vt: 'opt', v: 'Enviar', il: false });
 			}
 
 			let body = data.reduce((acc, { n, t, vt, v, il }) => {
@@ -123,7 +131,7 @@ module.exports = function(RED) {
 					}
 				}
 				return Object.assign(accum, { [key]: item });
-			}, {});
+            }, {});
 
 			const handleKonectyResponse = ({ success, data, errors }) => {
 				if (success) {
@@ -143,40 +151,17 @@ module.exports = function(RED) {
 						}
 					]);
 					const errMessages = errors.map(({ message }) => message).join('\n');
-					node.error(RED._('konecty-save.errors.error-processing', { message: errMessages }));
+					node.error(RED._('konecty-message.errors.error-processing', { message: errMessages }));
 					node.status({
 						fill: 'red',
 						shape: 'ring',
-						text: RED._('konecty-save.errors.error-processing', { message: errMessages })
+						text: RED._('konecty-message.errors.error-processing', { message: errMessages })
 					});
 				}
 			};
 
-			if (config.action === 'update') {
-				var codes = JSON.parse(config.ids) || msg.ids;
-				if (!Array.isArray(codes) || codes.length === 0) {
-					node.warn(RED._('konecty-save.errors.invalid-ids'));
-					node.status({ fill: 'red', shape: 'ring', text: 'konecty-save.errors.invalid-ids' });
-					return;
-				}
-
-				Promise.all(
-					codes.map(({ v, vt }) => {
-						if (STANDARD_TYPES.includes(vt)) {
-							return Promise.resolve(JSON.parse(RED.util.evaluateNodeProperty(v, vt, this, msg)));
-						}
-						if (vt === 'id') {
-							return apiInstance.getIdFromId(document, v);
-						}
-						return apiInstance.getIdFromCode(document, v);
-					})
-				).then(ids => {
-					apiInstance.update(document, ids, body).then(handleKonectyResponse);
-				});
-			} else {
-				apiInstance.create(document, body).then(handleKonectyResponse);
-			}
+            apiInstance.create('Message', body).then(handleKonectyResponse);			
 		});
 	}
-	RED.nodes.registerType('konecty-save', KonectySaveNode);
+	RED.nodes.registerType('konecty-message', KonectyMessageNode);
 };
