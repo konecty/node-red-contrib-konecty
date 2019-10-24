@@ -49,14 +49,18 @@ module.exports = function(RED) {
 						if (/[^\b]+/.test(i)) {
 							contactData[field] = { _id: i };
 						}
-					} catch (_) {}
+					} catch (_) {
+						node.warn(`Field ${field} is empty.`);
+					}
 				} else {
 					try {
 						const i = RED.util.evaluateNodeProperty(config[field], config[`${field}Type`], this, msg) || '';
 						if (/[^\b]+/.test(i)) {
 							contactData[field] = { _id: i };
 						}
-					} catch(_) {}
+					} catch(_) {
+						node.warn(`Field ${field} is empty.`);
+					}
 				}
 			};
 

@@ -20,7 +20,6 @@ module.exports = function(RED) {
 
 			const apiInstance = api({ host, key: token });
 
-			console.log(config)
 			var data = JSON.parse(config.data) || msg.payload;
 
 			node.status({});
