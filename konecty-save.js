@@ -31,78 +31,82 @@ module.exports = function(RED) {
 
 			let body = data.reduce((acc, { n, t, vt, v, il }) => {
 				let value;
-				switch (t) {
-					case 'email':
-						if (STANDARD_TYPES.includes(vt)) {
-							value = JSON.parse(RED.util.evaluateNodeProperty(v, vt, this, msg));
-						} else {
-							value = {
-								type: vt,
-								address: v
-							};
-						}
-						break;
-					case 'date':
-					case 'dateTime':
-						value = Date.parse(RED.util.evaluateNodeProperty(v, vt, this, msg));
-						break;
-					case 'lookup':
-						if (vt === 'form') {
-							value = { _id: v.i };
-						} else {
-							value = { _id: RED.util.evaluateNodeProperty(v, vt, this, msg) };
-						}
-						break;
-					case 'richText':
-						if (STANDARD_TYPES.includes(vt)) {
+				try {
+					switch (t) {
+						case 'email':
+							if (STANDARD_TYPES.includes(vt)) {
+								value = JSON.parse(RED.util.evaluateNodeProperty(v, vt, this, msg));
+							} else {
+								value = {
+									type: vt,
+									address: v
+								};
+							}
+							break;
+						case 'date':
+						case 'dateTime':
+							value = Date.parse(RED.util.evaluateNodeProperty(v, vt, this, msg));
+							break;
+						case 'lookup':
+							if (vt === 'form') {
+								value = { _id: v.i };
+							} else {
+								value = { _id: RED.util.evaluateNodeProperty(v, vt, this, msg) };
+							}
+							break;
+						case 'richText':
+							if (STANDARD_TYPES.includes(vt)) {
+								value = RED.util.evaluateNodeProperty(v, vt, this, msg);
+							} else {
+								value = v;
+							}
+							break;
+						case 'money':
+							if (STANDARD_TYPES.includes(vt)) {
+								value = { value: Number(RED.util.evaluateNodeProperty(v, vt, this, msg)) };
+							} else {
+								value = {
+									currency: vt,
+									value: Number(v)
+								};
+							}
+							break;
+						case 'boolean':
+							value = /^true$/i.test(RED.util.evaluateNodeProperty(v, vt, this, msg));
+							break;
+						case 'picklist':
+							if (STANDARD_TYPES.includes(vt)) {
+								value = RED.util.evaluateNodeProperty(v, vt, this, msg);
+							} else {
+								value = v;
+							}
+							break;
+						case 'address':
+						case 'personName':
+							if (vt === 'form') {
+								const result = Object.keys(v).reduce(
+									(acc, k) => ({
+										...acc,
+										[k]: RED.util.evaluateNodeProperty(v[k].v, v[k].vt, this, msg)
+									}),
+									{}
+								);
+								value = result;
+							} else {
+								value = JSON.parse(RED.util.evaluateNodeProperty(v, vt, this, msg));
+							}
+							break;
+						default:
 							value = RED.util.evaluateNodeProperty(v, vt, this, msg);
-						} else {
-							value = v;
-						}
-						break;
-					case 'money':
-						if (STANDARD_TYPES.includes(vt)) {
-							value = { value: Number(RED.util.evaluateNodeProperty(v, vt, this, msg)) };
-						} else {
-							value = {
-								currency: vt,
-								value: Number(v)
-							};
-						}
-						break;
-					case 'boolean':
-						value = /^true$/i.test(RED.util.evaluateNodeProperty(v, vt, this, msg));
-						break;
-					case 'picklist':
-						if (STANDARD_TYPES.includes(vt)) {
-							value = RED.util.evaluateNodeProperty(v, vt, this, msg);
-						} else {
-							value = v;
-						}
-						break;
-					case 'address':
-					case 'personName':
-						if (vt === 'form') {
-							const result = Object.keys(v).reduce(
-								(acc, k) => ({
-									...acc,
-									[k]: RED.util.evaluateNodeProperty(v[k].v, v[k].vt, this, msg)
-								}),
-								{}
-							);
-							value = result;
-						} else {
-							value = JSON.parse(RED.util.evaluateNodeProperty(v, vt, this, msg));
-						}
-						break;
-					default:
-						value = RED.util.evaluateNodeProperty(v, vt, this, msg);
-						break;
+							break;
+					}
+					if (/true/i.test(il) && !Array.isArray(value)) {
+						return { ...acc, [n]: [value] };
+					}
+					return { ...acc, [n]: value };
+				} catch(_) {
+					return acc;
 				}
-				if (/true/i.test(il) && !Array.isArray(value)) {
-					return { ...acc, [n]: [value] };
-				}
-				return { ...acc, [n]: value };
 			}, {});
 			
 			// Remove null-like values from body

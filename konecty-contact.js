@@ -17,7 +17,7 @@ module.exports = function(RED) {
 				phone: RED.util.evaluateNodeProperty(phoneNumber, phoneNumberType, this, msg)
 			};
 
-			if (/[^\b]+/.test(contactData.phone)) {
+			if (contactData.phone != null) {
 				if (!/^([0-9]){10,11}$/.test(contactData.phone)) {
 					node.warn(RED._('konecty-contact.errors.invalid-phone'));
 					node.status({ fill: 'red', shape: 'ring', text: RED._('konecty-contact.errors.invalid-phone') });
@@ -26,7 +26,7 @@ module.exports = function(RED) {
 			} else {
 				delete contactData.phone;
 			}
-			if (/[^\b]+/.test(contactData.email)) {
+			if (contactData.email != null) {
 				if (!/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(contactData.email)) {
 					node.warn(RED._('konecty-contact.errors.invalid-email'));
 					node.status({ fill: 'red', shape: 'ring', text: RED._('konecty-contact.errors.invalid-email') });
@@ -49,11 +49,17 @@ module.exports = function(RED) {
 						if (/[^\b]+/.test(i)) {
 							contactData[field] = { _id: i };
 						}
-					} catch (_) {}
+					} catch (_) {
+						node.warn(`Field ${field} is empty.`);
+					}
 				} else {
-					const i = RED.util.evaluateNodeProperty(config[field], config[`${field}Type`], this, msg) || '';
-					if (/[^\b]+/.test(i)) {
-						contactData[field] = { _id: i };
+					try {
+						const i = RED.util.evaluateNodeProperty(config[field], config[`${field}Type`], this, msg) || '';
+						if (/[^\b]+/.test(i)) {
+							contactData[field] = { _id: i };
+						}
+					} catch(_) {
+						node.warn(`Field ${field} is empty.`);
 					}
 				}
 			};
