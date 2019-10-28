@@ -64,6 +64,15 @@
 </script>
 
 <script type="text/javascript">
+	function loadData(node) {
+		$('#node-input-field-container').editableList('empty');
+		if (node.data != null) {
+			for (var i = 0; i < node.data.length; i++) {
+				var data = node.data[i];
+				$('#node-input-field-container').editableList('addItem', data);
+			}
+		}
+	}
 	function createSubField(node, group, name, container, fieldData) {
 		var id = 'node-input-field-' + group + '-' + name + '-' + RED.nodes.id();
 		var className = 'node-input-field-' + name;
@@ -573,12 +582,20 @@
 			types: ['msg', 'flow', 'global', 'env', 'str']
 		});
 
-		if (node.ids && typeof node.ids === 'string') {
-			node.ids = JSON.parse(node.ids);
+		if (node.ids) {
+			if (typeof node.ids === 'object')
+				node.ids = JSON.parse(JSON.stringify(node.ids));
+			else if (typeof node.ids === 'string')
+				node.ids = JSON.parse(node.ids);
 		}
-		if (node.data && typeof node.data === 'string') {
-			node.data = JSON.parse(node.data);
+
+		if (node.data) {
+			if (typeof node.data === 'object')
+				node.data = JSON.parse(JSON.stringify(node.data));
+			else if (typeof node.data === 'string')
+				node.data = JSON.parse(node.data);
 		}
+
 		$('.node-input-field-container-row').hide();
 		$('.node-input-code-container-row').hide();
 		$('#node-input-action').change(function() {
@@ -608,7 +625,12 @@
 							node.fields = doc.fields || [];
 							buildFieldList(node);
 							if (node.document === document) {
-								loadData(node);
+								if (data == null) return;
+
+								for (var i = 0; i < node.data.length; i++) {
+									var data = node.data[i];
+									$('#node-input-field-container').editableList('addItem', data);
+								}
 							} else {
 								$('#node-input-code-container').editableList('empty');
 								$('#node-input-field-container').editableList('empty');
@@ -710,16 +732,6 @@
 				},
 				removable: true
 			});
-	}
-
-	function loadData(node) {
-		$('#node-input-field-container').editableList('empty');
-		if (node.data != null) {
-			for (var i = 0; i < node.data.length; i++) {
-				var data = node.data[i];
-				$('#node-input-field-container').editableList('addItem', data);
-			}
-		}
 	}
 </script>
 <script type="text/javascript">
