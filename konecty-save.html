@@ -625,8 +625,9 @@
 							node.fields = doc.fields || [];
 							buildFieldList(node);
 							if (node.document === document) {
-								if (data == null) return;
+								if (node.data == null) return;
 
+								$('#node-input-field-container').editableList('empty');
 								for (var i = 0; i < node.data.length; i++) {
 									var data = node.data[i];
 									$('#node-input-field-container').editableList('addItem', data);
