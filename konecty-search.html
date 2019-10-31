@@ -563,13 +563,15 @@
 			sortable: true,
 			removable: true,
 			addItem: function(row, index, data) {
-				let fields = kondata[doc] ? kondata[doc]['fields'] : [];
+				let theDoc = $('#node-input-doc').val();
+				let fields = kondata[theDoc] ? kondata[theDoc]['fields'] : [];
 				if (fields == null) {
 					return;
 				}
 				let ff = fields.map(f => {
 					return { type: f.type, value: f.name, label: f.label.pt_BR };
 				});
+				ff = sortArrayByAttribute(ff, 'label'); 
 
 				$('<select></select>')
 					.append(ff.map(field => $(`<option value="${field.value}">${field.label}</option>`)))
@@ -622,7 +624,7 @@
 			token: { value: '', validate: RED.validators.typedInput('tokenType') },
 			tokenType: { value: 'str' },
 			limit: { value: 0 },
-			projections: { value: [] }
+			projections: { value: '[]' }
 		},
 		credentials: {
 			url: { value: '', required: true },
