@@ -20,7 +20,13 @@ module.exports = function(RED) {
 
 			const apiInstance = api({ host, key: token });
 
-			var data = JSON.parse(config.data) || msg.payload;
+            var data;
+            if (typeof config.data === 'object')
+				data = JSON.parse(JSON.stringify(config.data));
+			else if (typeof config.data === 'string')
+				data = JSON.parse(config.data);
+            else
+                data = config.payload;
 
 			node.status({});
 			if (!Array.isArray(data) || data.length === 0) {
