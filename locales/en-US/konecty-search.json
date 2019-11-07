@@ -3,7 +3,8 @@
 		"label": {
 			"default-label": "Retrive Documents",
 			"token": "User Token",
-			"limit": "Limit",
+            "limit": "Limit",
+            "start": "Start",
 			"projection": "Project fields",
 			"id": "Unique identifier"
 		}

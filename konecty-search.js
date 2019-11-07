@@ -87,7 +87,8 @@ module.exports = function(RED) {
 				.get(`/rest/data/${config.doc.split(':')[1]}/find`, {
 					params: {
 						filter: JSON.stringify(filter),
-						limit: config.limit && Number(config.limit) || 0,
+                        limit: config.limit && Number(config.limit) || 0,
+                        start: config.start && Number(config.start) || 0,
 						sort: `[{"property":"_id","direction":"ASC"}]`,
 						fields: Array.isArray(fields) && fields.length > 0 ? fields.join() : undefined
 					}
@@ -95,7 +96,8 @@ module.exports = function(RED) {
 				.then(function(response) {
 					node.status({});
 					msg.success = response.data.success;
-					msg.payload = response.data.data;
+                    msg.payload = response.data.data;
+                    msg.total = responde.data.total;
 					node.send(msg);
 				})
 				.catch(function(error) {
