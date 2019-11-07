@@ -97,7 +97,7 @@ module.exports = function(RED) {
 					node.status({});
 					msg.success = response.data.success;
                     msg.payload = response.data.data;
-                    msg.total = responde.data.total;
+                    msg.total = response.data.total;
 					node.send(msg);
 				})
 				.catch(function(error) {
