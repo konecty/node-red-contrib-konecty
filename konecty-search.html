@@ -271,7 +271,9 @@
 			return;
 		}
 		let ff = fields.map(f => {
-			return { type: f.type, value: f.name, label: f.label.pt_BR };
+            let label = f.label;
+            if (!label) label = { pt_BR: f.name, en_US: f.name };
+			return { type: f.type, value: f.name, label: label.pt_BR || label.en_US };
 		});
 		ff = sortArrayByAttribute(ff, 'label');
 
@@ -573,7 +575,9 @@
 					return;
 				}
 				let ff = fields.map(f => {
-					return { type: f.type, value: f.name, label: f.label.pt_BR };
+                    let label = f.label;
+                    if (!label) label = { pt_BR: f.name, en_US: f.name };
+					return { type: f.type, value: f.name, label: label.pt_BR || label.en_US };
 				});
 				ff = sortArrayByAttribute(ff, 'label'); 
 
