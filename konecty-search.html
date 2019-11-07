@@ -21,7 +21,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-start"><i class="fa fa-gavel"></i> <span data-i18n="konecty-search.label.start"></span></label>
-        <input type="number" id="node-input-start" data-i18n="[placeholder]konecty-search.label.start">
+        <input type="text" id="node-input-start" data-i18n="[placeholder]konecty-search.label.start">
       </div>
 
 	<div class="form-row form-row-search" style="display:none">
@@ -633,6 +633,7 @@
 			tokenType: { value: 'str' },
             limit: { value: 0 },
             start: { value: 0 },
+            startType: { value: 0 },
 			projections: { value: '[]' }
 		},
 		credentials: {
@@ -642,6 +643,11 @@
 		},
 		oneditprepare: function() {
 			const node = this;
+
+            $('#node-input-start').typedInput({
+				default: node.startType || 'num',
+				types: ['msg', 'flow', 'global', 'num', 'jsonata']
+			});
 
 			$('#node-input-token').typedInput({
 				default: node.tokenType || 'str',
@@ -687,6 +693,7 @@
 		oneditsave: function() {
 			const node = this;
 			node.tokenType = $('#node-input-token').typedInput('type');
+            node.startType = $('#node-input-start').typedInput('type');
 			saveKonectyFilter();
 			saveProjections(node);
 		},
