@@ -71,7 +71,12 @@ module.exports = function(RED) {
 				if (/[^ ]+/.test(userToken)) {
 					token = userToken;
 				}
-			}
+            }
+
+            let start = 0;
+            if (config.start && config.startType) {
+                start = RED.util.evaluateNodeProperty(config.start, config.startType, this, msg);
+            }
 
 			node.status({ fill: 'blue', shape: 'ring', text: 'searching...' });
 			const axios = axios_instance.create({
@@ -88,7 +93,7 @@ module.exports = function(RED) {
 					params: {
 						filter: JSON.stringify(filter),
                         limit: config.limit && Number(config.limit) || 0,
-                        start: config.start && Number(config.start) || 0,
+                        start: Number(start),
 						sort: `[{"property":"_id","direction":"ASC"}]`,
 						fields: Array.isArray(fields) && fields.length > 0 ? fields.join() : undefined
 					}
