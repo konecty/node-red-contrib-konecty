@@ -18,7 +18,11 @@
 	<div class="form-row">
 	  <label for="node-input-limit"><i class="fa fa-cubes"></i> <span data-i18n="konecty-search.label.limit"></span></label>
 	  <input type="number" id="node-input-limit" data-i18n="[placeholder]konecty-search.label.limit">
-	</div>
+    </div>
+    <div class="form-row">
+        <label for="node-input-start"><i class="fa fa-gavel"></i> <span data-i18n="konecty-search.label.start"></span></label>
+        <input type="number" id="node-input-start" data-i18n="[placeholder]konecty-search.label.start">
+      </div>
 
 	<div class="form-row form-row-search" style="display:none">
 	  <label for="node-input-doc"><i class="fa fa-dot-circle-o"></i> <span>Document</span></label>
@@ -623,7 +627,8 @@
 			filter: { value: '' },
 			token: { value: '', validate: RED.validators.typedInput('tokenType') },
 			tokenType: { value: 'str' },
-			limit: { value: 0 },
+            limit: { value: 0 },
+            start: { value: 0 },
 			projections: { value: '[]' }
 		},
 		credentials: {
