@@ -45,12 +45,14 @@ module.exports = function(RED) {
 					if (c.value1) {
 						if (c.fieldType == 'dateTime') c.value['greater_or_equals'] = { $date: moment(c.value1, 'YYYY-MM-DD HH:mm').format() };
 						else if (c.fieldType == 'date') c.value['greater_or_equals'] = { $date: moment(c.value1, 'YYYY-MM-DD').format() };
-						else if (c.fieldType == 'money' || c.fieldType == 'number') c.value['greater_or_equals'] = Number(c.value1);
+                        else if (c.fieldType == 'money' || c.fieldType == 'number') c.value['greater_or_equals'] = Number(c.value1);
+                        else c.value['greater_or_equals'] = c.value1;
 					}
 					if (c.value2) {
 						if (c.fieldType == 'dateTime') c.value['less_or_equals'] = { $date: moment(c.value2, 'YYYY-MM-DD HH:mm').format() };
 						else if (c.fieldType == 'date') c.value['less_or_equals'] = { $date: moment(c.value2, 'YYYY-MM-DD').format() };
-						else if (c.fieldType == 'money' || c.fieldType == 'number') c.value['less_or_equals'] = Number(c.value2);
+                        else if (c.fieldType == 'money' || c.fieldType == 'number') c.value['less_or_equals'] = Number(c.value2);
+                        else c.value['less_or_equals'] = c.value2;
 					}
 				} else {
 					c.value = c.value1;
