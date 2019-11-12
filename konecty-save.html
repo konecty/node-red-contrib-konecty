@@ -64,6 +64,14 @@
 </script>
 
 <script type="text/javascript">
+    // sorts an array of objects by one of its attributes
+    function sortArrayByLabel(arr) {
+		return arr.sort((a, b) => {
+            const aLabel = a.label && a.label.pt_BR || a.label.en || "";
+            const bLabel = b.label && b.label.pt_BR || b.label.en || "";
+            return (aLabel > bLabel ? 1 : bLabel > aLabel ? -1 : 0);
+        });
+	}
 	function loadData(node) {
 		$('#node-input-field-container').editableList('empty');
 		if (node.data != null) {
@@ -622,7 +630,7 @@
 					type: 'GET',
 					success: function(doc) {
 						if (doc) {
-							node.fields = doc.fields || [];
+							node.fields = sortArrayByLabel(doc.fields) || [];
 							buildFieldList(node);
 							if (node.document === document) {
 								if (node.data == null) return;
@@ -657,7 +665,7 @@
 						.end();
 					var group = $('<optgroup/>', { label: 'Konecty Documents' }).appendTo(inputDocument);
 
-					Array.from(docs).forEach(({ name, label }) => {
+					sortArrayByLabel(Array.from(docs)).forEach(({ name, label }) => {
 						group.append(
 							$('<option></option>')
 								.val(name)
