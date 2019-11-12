@@ -173,7 +173,7 @@ module.exports = function(RED) {
 				Promise.all(
 					codes.map(({ v, vt }) => {
 						if (STANDARD_TYPES.includes(vt)) {
-							return Promise.resolve(JSON.parse(RED.util.evaluateNodeProperty(v, vt, this, msg)));
+							return Promise.resolve(RED.util.evaluateNodeProperty(v, vt, this, msg));
 						}
 						if (vt === 'id') {
 							return apiInstance.getIdFromId(document, v);
