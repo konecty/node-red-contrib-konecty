@@ -123,11 +123,5 @@ module.exports = function(RED) {
 		});
 	}
 
-	RED.nodes.registerType('konecty-search', KonectySearchNode, {
-		credentials: {
-			url: { type: 'text' },
-			namespace: { type: 'text' },
-			token: { type: 'text' }
-		}
-	});
+	RED.nodes.registerType('konecty-search', KonectySearchNode);
 };

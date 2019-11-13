@@ -51,7 +51,10 @@ module.exports = function(RED) {
 							break;
 						case 'date':
 						case 'dateTime':
-							value = Date.parse(RED.util.evaluateNodeProperty(v, vt, this, msg));
+                            value = RED.util.evaluateNodeProperty(v, vt, this, msg);
+                            if (value instanceof Date) {
+                                value = { $date: new Date(RED.util.evaluateNodeProperty(v, vt, this, msg)).toISOString() };
+                            }
 							break;
 						case 'lookup':
 							if (vt === 'form') {
