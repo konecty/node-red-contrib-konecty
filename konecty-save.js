@@ -22,7 +22,7 @@ module.exports = function(RED) {
 
             var data;
             if (typeof config.data === 'object')
-				data = JSON.parse(JSON.stringify(config.data));
+				data = config.data;
 			else if (typeof config.data === 'string')
 				data = JSON.parse(config.data);
             else
@@ -41,7 +41,7 @@ module.exports = function(RED) {
 					switch (t) {
 						case 'email':
 							if (STANDARD_TYPES.includes(vt)) {
-								value = JSON.parse(RED.util.evaluateNodeProperty(v, vt, this, msg));
+								value = RED.util.evaluateNodeProperty(v, vt, this, msg);
 							} else {
 								value = {
 									type: vt,
@@ -102,7 +102,7 @@ module.exports = function(RED) {
 								);
 								value = result;
 							} else {
-								value = JSON.parse(RED.util.evaluateNodeProperty(v, vt, this, msg));
+								value = RED.util.evaluateNodeProperty(v, vt, this, msg);
 							}
 							break;
 						default:
@@ -116,8 +116,8 @@ module.exports = function(RED) {
 				} catch(_) {
 					return acc;
 				}
-			}, {});
-			
+            }, {});
+
 			// Remove null-like values from body
 			body = Object.keys(body).reduce((accum, key) => {
 				const item = body[key];
@@ -166,7 +166,15 @@ module.exports = function(RED) {
 			};
 
 			if (config.action === 'update') {
-				var codes = JSON.parse(config.ids) || msg.ids;
+                var codes;
+				if (config.ids) {
+                    if (typeof config.ids === 'object')
+                        codes = config.ids;
+                    else if (typeof config.ids === 'string')
+                        codes = JSON.parse(config.ids);
+                } else {
+                    codes = msg.ids;
+                }
 				if (!Array.isArray(codes) || codes.length === 0) {
 					node.warn(RED._('konecty-save.errors.invalid-ids'));
 					node.status({ fill: 'red', shape: 'ring', text: 'konecty-save.errors.invalid-ids' });
