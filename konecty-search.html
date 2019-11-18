@@ -425,7 +425,7 @@
 	function onChangeOperator(event, index) {
 		if (event) {
 			let op = event.target.value;
-			if (op == '' || op === 'exists') {
+			if (op == '') {
 				$('#konecty-search-wrapper-value-' + index).hide();
 			} else {
 				$('#konecty-search-wrapper-value-' + index).show();
@@ -521,7 +521,7 @@
 				$('#konecty-search-operator-' + idx).val(condition.operator);
 				let op = condition.operator;
 				// visibility
-				if (op == '' || op === 'exists') {
+				if (op == '') {
 					$('#konecty-search-wrapper-value-' + idx).hide();
 				} else {
 					$('#konecty-search-wrapper-value-' + idx).show();
