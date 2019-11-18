@@ -1,21 +1,6 @@
 const axios_instance = require('axios');
 const moment = require('moment');
 
-function parseValue(msg, value, type) {
-	return RED.util.evaluateNodeProperty(config.product, config.productType, this, msg);
-
-	if (type == 'msg')
-		value = value.split('.').reduce((o, k) => {
-			return o[k];
-		}, msg);
-	else if (type == 'flow') value = flow.get(value);
-	else if (type == 'global') value = global.get(value);
-	else if (type == 'num') value = Number(value);
-	else if (type == 'bool' && value == 'true') value = true;
-	else if (type == 'bool' && value == 'false') value = false;
-	return value;
-}
-
 module.exports = function(RED) {
 	function KonectySearchNode(config) {
 		
@@ -54,13 +39,13 @@ module.exports = function(RED) {
                         else if (c.fieldType == 'money' || c.fieldType == 'number') c.value['less_or_equals'] = Number(c.value2);
                         else c.value['less_or_equals'] = c.value2;
 					}
-				} else {
+                } else {
 					c.value = c.value1;
 				}
 			}
 			
 			// Ensure that the condition will have value property
-			filter.conditions = filter.conditions.filter(item => item.value);
+			filter.conditions = filter.conditions.filter(item => item.value != null);
 
 			let root_url = node.server.host;
 			if (root_url.endsWith('/')) {
