@@ -45,7 +45,7 @@ module.exports = function(RED) {
 			}
 			
 			// Ensure that the condition will have value property
-			filter.conditions = filter.conditions.filter(item => item.value != null);
+			filter.conditions = filter.conditions.filter(item => ![null, undefined, NaN].includes(item.value));
 
 			let root_url = node.server.host;
 			if (root_url.endsWith('/')) {
@@ -73,18 +73,21 @@ module.exports = function(RED) {
 				}
 			});
 
-			const fields = JSON.parse(config.projections);
+            const fields = JSON.parse(config.projections);
+            const params = {
+                filter: JSON.stringify(filter),
+                limit: config.limit && Number(config.limit) || 0,
+                start: Number(start),
+                sort: `[{"property":"_id","direction":"ASC"}]`,
+                fields: Array.isArray(fields) && fields.length > 0 ? fields.join() : undefined
+            };
+
+            if (config.debugMode) {
+                node.warn(params);
+            }
 
 			axios
-				.get(`/rest/data/${config.doc.split(':')[1]}/find`, {
-					params: {
-						filter: JSON.stringify(filter),
-                        limit: config.limit && Number(config.limit) || 0,
-                        start: Number(start),
-						sort: `[{"property":"_id","direction":"ASC"}]`,
-						fields: Array.isArray(fields) && fields.length > 0 ? fields.join() : undefined
-					}
-				})
+				.get(`/rest/data/${config.doc.split(':')[1]}/find`, { params })
 				.then(function(response) {
 					node.status({});
 					msg.success = response.data.success;

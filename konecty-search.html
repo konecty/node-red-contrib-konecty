@@ -1,7 +1,18 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" charset="utf-8"></script>
 
 <script type="text/x-red" data-template-name="konecty-search">
-	<!--6-->
+	<style>
+        .fields-block {
+            margin-left: 16px;
+            max-width: 450px;
+        }
+        .fields-block .form-row {
+            display: flex;
+        }
+        .fields-block .form-row label {
+            width: 150px;
+        }
+    </style>
 	<input type="hidden" id="node-input-filter">
 	<div class="form-row">
 	  <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -10,19 +21,25 @@
 	<div class="form-row">
 		<label for="node-input-server"><i class="fa fa-globe"></i> Konecty</label>
 		<input type="text" id="node-input-server" placeholder="Konecty Server">
-	</div>
-	<div class="form-row">
-	  <label for="node-input-token"><i class="fa fa-key"></i> <span data-i18n="konecty-search.label.token"></span></label>
-	  <input type="text" id="node-input-token" data-i18n="[placeholder]konecty-search.label.token">
-	</div>
-	<div class="form-row">
-	  <label for="node-input-limit"><i class="fa fa-cubes"></i> <span data-i18n="konecty-search.label.limit"></span></label>
-	  <input type="number" id="node-input-limit" data-i18n="[placeholder]konecty-search.label.limit">
     </div>
-    <div class="form-row">
-        <label for="node-input-start"><i class="fa fa-gavel"></i> <span data-i18n="konecty-search.label.start"></span></label>
-        <input type="text" id="node-input-start" data-i18n="[placeholder]konecty-search.label.start">
-      </div>
+    <div class="fields-block">
+        <div class="form-row">
+            <label for="node-input-token"><i class="fa fa-key"></i> <span data-i18n="konecty-search.label.token"></span></label>
+            <input type="text" id="node-input-token" data-i18n="[placeholder]konecty-search.label.token" style="width: 100%">
+        </div>
+        <div class="form-row">
+            <label for="node-input-start"><i class="fa fa-gavel"></i> <span data-i18n="konecty-search.label.start"></span></label>
+            <input type="text" id="node-input-start" data-i18n="[placeholder]konecty-search.label.start" style="width: 100%">
+        </div>
+        <div class="form-row">
+            <label for="node-input-limit"><i class="fa fa-cubes"></i> <span data-i18n="konecty-search.label.limit"></span></label>
+            <input type="number" id="node-input-limit" data-i18n="[placeholder]konecty-search.label.limit">
+        </div>
+        <div class="form-row">
+            <label for="node-input-debugMode"><i class="fa fa-bug"></i> <span data-i18n="konecty-search.label.debug-mode"></span></label>
+            <input type="checkbox" id="node-input-debugMode" style="vertical-align:top;width: 20px;" />
+        </div>
+    </div>
 
 	<div class="form-row form-row-search" style="display:none">
 	  <label for="node-input-doc"><i class="fa fa-dot-circle-o"></i> <span>Document</span></label>
@@ -634,6 +651,7 @@
             limit: { value: 0 },
             start: { value: 0 },
             startType: { value: 0 },
+            debugMode: { value: false },
 			projections: { value: '[]' }
 		},
 		oneditprepare: function() {
