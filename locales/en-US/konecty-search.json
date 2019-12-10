@@ -1,13 +1,14 @@
 {
-	"konecty-search": {
-		"label": {
-			"default-label": "Retrive Documents",
-			"token": "User Token",
-            "limit": "Limit",
-            "start": "Start",
-            "projection": "Project fields",
-            "debug-mode": "Debug mode",
-			"id": "Unique identifier"
-		}
-	}
+  "konecty-search": {
+    "label": {
+      "default-label": "Retrive Documents",
+      "token": "User Token",
+      "limit": "Limit",
+      "start": "Start",
+      "projection": "Project fields",
+      "debug-mode": "Debug mode",
+      "sort": "Sort order",
+      "id": "Unique identifier"
+    }
+  }
 }

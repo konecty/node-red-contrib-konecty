@@ -1,721 +1,941 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" charset="utf-8"></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"
+  charset="utf-8"
+></script>
 
 <script type="text/x-red" data-template-name="konecty-search">
-	<style>
-        .fields-block {
-            margin-left: 16px;
-            max-width: 450px;
-        }
-        .fields-block .form-row {
-            display: flex;
-        }
-        .fields-block .form-row label {
-            width: 150px;
-        }
-    </style>
-	<input type="hidden" id="node-input-filter">
-	<div class="form-row">
-	  <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-	  <input type="text" id="node-input-name" placeholder="Name">
-	</div>
-	<div class="form-row">
-		<label for="node-input-server"><i class="fa fa-globe"></i> Konecty</label>
-		<input type="text" id="node-input-server" placeholder="Konecty Server">
-    </div>
-    <div class="fields-block">
-        <div class="form-row">
-            <label for="node-input-token"><i class="fa fa-key"></i> <span data-i18n="konecty-search.label.token"></span></label>
-            <input type="text" id="node-input-token" data-i18n="[placeholder]konecty-search.label.token" style="width: 100%">
-        </div>
-        <div class="form-row">
-            <label for="node-input-start"><i class="fa fa-gavel"></i> <span data-i18n="konecty-search.label.start"></span></label>
-            <input type="text" id="node-input-start" data-i18n="[placeholder]konecty-search.label.start" style="width: 100%">
-        </div>
-        <div class="form-row">
-            <label for="node-input-limit"><i class="fa fa-cubes"></i> <span data-i18n="konecty-search.label.limit"></span></label>
-            <input type="number" id="node-input-limit" data-i18n="[placeholder]konecty-search.label.limit">
-        </div>
-        <div class="form-row">
-            <label for="node-input-debugMode"><i class="fa fa-bug"></i> <span data-i18n="konecty-search.label.debug-mode"></span></label>
-            <input type="checkbox" id="node-input-debugMode" style="vertical-align:top;width: 20px;" />
-        </div>
-    </div>
+  <style>
+         .fields-block {
+             margin-left: 16px;
+             max-width: 450px;
+         }
+         .fields-block .form-row {
+             display: flex;
+         }
+         .fields-block .form-row label {
+             width: 150px;
+         }
+     </style>
+  <input type="hidden" id="node-input-filter">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+  	<label for="node-input-server"><i class="fa fa-globe"></i> Konecty</label>
+  	<input type="text" id="node-input-server" placeholder="Konecty Server">
+     </div>
+     <div class="fields-block">
+         <div class="form-row">
+             <label for="node-input-token"><i class="fa fa-key"></i> <span data-i18n="konecty-search.label.token"></span></label>
+             <input type="text" id="node-input-token" data-i18n="[placeholder]konecty-search.label.token" style="width: 100%">
+         </div>
+         <div class="form-row">
+             <label for="node-input-start"><i class="fa fa-gavel"></i> <span data-i18n="konecty-search.label.start"></span></label>
+             <input type="text" id="node-input-start" data-i18n="[placeholder]konecty-search.label.start" style="width: 100%">
+         </div>
+         <div class="form-row">
+             <label for="node-input-limit"><i class="fa fa-cubes"></i> <span data-i18n="konecty-search.label.limit"></span></label>
+             <input type="number" id="node-input-limit" data-i18n="[placeholder]konecty-search.label.limit">
+         </div>
+         <div class="form-row">
+             <label for="node-input-debugMode"><i class="fa fa-bug"></i> <span data-i18n="konecty-search.label.debug-mode"></span></label>
+             <input type="checkbox" id="node-input-debugMode" style="vertical-align:top;width: 20px;" />
+         </div>
+     </div>
 
-	<div class="form-row form-row-search" style="display:none">
-	  <label for="node-input-doc"><i class="fa fa-dot-circle-o"></i> <span>Document</span></label>
-	  <select id="node-input-doc">
-	    <option value=""></option>
-	  </select>
-	</div>
-	<div class="form-row form-row-search node-input-rule-container-row" style="display:none">
-	  <ol id="node-input-rule-container" class="red-ui-editableList-list ui-sortable" style="min-height: 200px; min-width: 450px; height: auto;">
-	  </ol>
-	</div>
+  <div class="form-row form-row-search" style="display:none">
+    <label for="node-input-doc"><i class="fa fa-dot-circle-o"></i> <span>Document</span></label>
+    <select id="node-input-doc">
+      <option value=""></option>
+    </select>
+  </div>
+  <div class="form-row form-row-search node-input-rule-container-row" style="display:none">
+    <ol id="node-input-rule-container" class="red-ui-editableList-list ui-sortable" style="min-height:150px; min-width: 450px; height: auto;">
+    </ol>
+  </div>
 
-	<div class="form-row form-row-search node-input-projection-container-row" style="">
-	  <input type="hidden" id="node-input-projections" />
-	  <label for="node-input-projection-container"><span data-i18n="konecty-search.label.projection"></span></label>
-	  <ol id="node-input-projection-container" class="red-ui-editableList-list ui-sortable" style="min-height: 200px; min-width: 450px; height: auto;">
-	  </ol>
-	</div>
+  <div class="form-row form-row-search node-input-projection-container-row" style="display:none">
+    <input type="hidden" id="node-input-projections" />
+    <label for="node-input-projection-container"><span data-i18n="konecty-search.label.projection"></span></label>
+    <ol id="node-input-projection-container" class="red-ui-editableList-list ui-sortable" style="min-height: 150px; min-width: 450px; height: auto;">
+    </ol>
+  </div>
+
+  <div class="form-row form-row-search node-input-sort-container-row" style="display:none">
+    <input type="hidden" id="node-input-sort" />
+    <label for="node-input-sort-container"><span data-i18n="konecty-search.label.sort"></span></label>
+    <ol id="node-input-sort-container" class="red-ui-editableList-list ui-sortable" style="min-height: 150px; min-width: 450px; height: auto;">
+    </ol>
+  </div>
 </script>
 
 <script type="text/javascript">
-	var operatorsByType = {
-		text: ['exists', 'equals', 'not_equals', 'in', 'not_in', 'contains', 'not_contains', 'starts_with', 'end_with'],
-		url: ['exists', 'equals', 'not_equals', 'in', 'not_in', 'contains', 'not_contains', 'starts_with', 'end_with'],
-		'email.address': ['exists', 'equals', 'not_equals', 'in', 'not_in', 'contains', 'not_contains', 'starts_with', 'end_with'],
-		number: [
-			'exists',
-			'equals',
-			'not_equals',
-			'in',
-			'not_in',
-			/*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'
-		],
-		autoNumber: [
-			'exists',
-			'equals',
-			'not_equals',
-			'in',
-			'not_in',
-			/*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'
-		],
-		date: [
-			'exists',
-			'equals',
-			'not_equals',
-			'in',
-			'not_in',
-			/*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'
-		],
-		dateTime: [
-			'exists',
-			'equals',
-			'not_equals',
-			'in',
-			'not_in',
-			/*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'
-		],
-		money: [
-			'exists',
-			'equals',
-			'not_equals',
-			'in',
-			'not_in',
-			/*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'
-		],
-		'money.currency': [
-			'exists',
-			'equals',
-			'not_equals',
-			'in',
-			'not_in',
-			/*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'
-		],
-		'money.value': [
-			'exists',
-			'equals',
-			'not_equals',
-			'in',
-			'not_in',
-			/*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'
-		],
-		boolean: ['exists', 'equals', 'not_equals'],
-		'address.country': ['exists', 'equals', 'not_equals'],
-		'address.city': ['exists', 'equals', 'not_equals', 'in', 'not_in', 'contains', 'not_contains', 'starts_with', 'end_with'],
-		'address.state': ['exists', 'equals', 'not_equals', 'in', 'not_in'],
-		'address.district': ['exists', 'equals', 'not_equals', 'in', 'not_in', 'starts_with', 'end_with'],
-		'address.place': ['exists', 'equals', 'not_equals', 'contains', 'starts_with', 'end_with'],
-		'address.number': ['exists', 'equals', 'not_equals'],
-		'address.postalCode': ['exists', 'equals', 'not_equals', 'contains'],
-		'address.complement': ['exists', 'equals', 'not_equals', 'contains'],
-		'address.geolocation.0': [
-			'exists',
-			'equals',
-			'not_equals',
-			'in',
-			'not_in',
-			/*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'
-		],
-		'address.geolocation.1': [
-			'exists',
-			'equals',
-			'not_equals',
-			'in',
-			'not_in',
-			/*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'
-		],
-		'personName.first': ['exists', 'equals', 'not_equals', 'contains', 'not_contains', 'starts_with', 'end_with'],
-		'personName.last': ['exists', 'equals', 'not_equals', 'contains', 'not_contains', 'starts_with', 'end_with'],
-		'personName.full': ['exists', 'equals', 'not_equals', 'contains', 'not_contains', 'starts_with', 'end_with'],
-		'phone.phoneNumber': ['exists', 'equals', 'not_equals', 'in', 'not_in', 'contains', 'not_contains', 'starts_with', 'end_with'],
-		'phone.countryCode': ['exists', 'equals', 'not_equals', 'in', 'not_in'],
-		picklist: ['exists', 'equals', 'not_equals', 'in', 'not_in'],
-		lookup: ['exists', 'lookup'],
-		'lookup._id': ['exists', 'equals', 'not_equals', 'in', 'not_in'],
-		inheritLookup: ['exists', 'lookup'],
-		ObjectId: ['exists', 'equals', 'not_equals', 'in', 'not_in'],
-		encrypted: ['exists', 'equals', 'not_equals'],
-		filter: ['exists'],
-		'filter.conditions': ['exists'],
-		richText: ['exists', 'contains'],
-		file: ['exists'],
-		percentage: [
-			'exists',
-			'equals',
-			'not_equals',
-			/*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ 'between'
-		]
-	};
+  var operatorsByType = {
+    text: [
+      "exists",
+      "equals",
+      "not_equals",
+      "in",
+      "not_in",
+      "contains",
+      "not_contains",
+      "starts_with",
+      "end_with"
+    ],
+    url: [
+      "exists",
+      "equals",
+      "not_equals",
+      "in",
+      "not_in",
+      "contains",
+      "not_contains",
+      "starts_with",
+      "end_with"
+    ],
+    "email.address": [
+      "exists",
+      "equals",
+      "not_equals",
+      "in",
+      "not_in",
+      "contains",
+      "not_contains",
+      "starts_with",
+      "end_with"
+    ],
+    number: [
+      "exists",
+      "equals",
+      "not_equals",
+      "in",
+      "not_in",
+      /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ "between"
+    ],
+    autoNumber: [
+      "exists",
+      "equals",
+      "not_equals",
+      "in",
+      "not_in",
+      /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ "between"
+    ],
+    date: [
+      "exists",
+      "equals",
+      "not_equals",
+      "in",
+      "not_in",
+      /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ "between"
+    ],
+    dateTime: [
+      "exists",
+      "equals",
+      "not_equals",
+      "in",
+      "not_in",
+      /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ "between"
+    ],
+    money: [
+      "exists",
+      "equals",
+      "not_equals",
+      "in",
+      "not_in",
+      /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ "between"
+    ],
+    "money.currency": [
+      "exists",
+      "equals",
+      "not_equals",
+      "in",
+      "not_in",
+      /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ "between"
+    ],
+    "money.value": [
+      "exists",
+      "equals",
+      "not_equals",
+      "in",
+      "not_in",
+      /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ "between"
+    ],
+    boolean: ["exists", "equals", "not_equals"],
+    "address.country": ["exists", "equals", "not_equals"],
+    "address.city": [
+      "exists",
+      "equals",
+      "not_equals",
+      "in",
+      "not_in",
+      "contains",
+      "not_contains",
+      "starts_with",
+      "end_with"
+    ],
+    "address.state": ["exists", "equals", "not_equals", "in", "not_in"],
+    "address.district": [
+      "exists",
+      "equals",
+      "not_equals",
+      "in",
+      "not_in",
+      "starts_with",
+      "end_with"
+    ],
+    "address.place": [
+      "exists",
+      "equals",
+      "not_equals",
+      "contains",
+      "starts_with",
+      "end_with"
+    ],
+    "address.number": ["exists", "equals", "not_equals"],
+    "address.postalCode": ["exists", "equals", "not_equals", "contains"],
+    "address.complement": ["exists", "equals", "not_equals", "contains"],
+    "address.geolocation.0": [
+      "exists",
+      "equals",
+      "not_equals",
+      "in",
+      "not_in",
+      /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ "between"
+    ],
+    "address.geolocation.1": [
+      "exists",
+      "equals",
+      "not_equals",
+      "in",
+      "not_in",
+      /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ "between"
+    ],
+    "personName.first": [
+      "exists",
+      "equals",
+      "not_equals",
+      "contains",
+      "not_contains",
+      "starts_with",
+      "end_with"
+    ],
+    "personName.last": [
+      "exists",
+      "equals",
+      "not_equals",
+      "contains",
+      "not_contains",
+      "starts_with",
+      "end_with"
+    ],
+    "personName.full": [
+      "exists",
+      "equals",
+      "not_equals",
+      "contains",
+      "not_contains",
+      "starts_with",
+      "end_with"
+    ],
+    "phone.phoneNumber": [
+      "exists",
+      "equals",
+      "not_equals",
+      "in",
+      "not_in",
+      "contains",
+      "not_contains",
+      "starts_with",
+      "end_with"
+    ],
+    "phone.countryCode": ["exists", "equals", "not_equals", "in", "not_in"],
+    picklist: ["exists", "equals", "not_equals", "in", "not_in"],
+    lookup: ["exists", "lookup"],
+    "lookup._id": ["exists", "equals", "not_equals", "in", "not_in"],
+    inheritLookup: ["exists", "lookup"],
+    ObjectId: ["exists", "equals", "not_equals", "in", "not_in"],
+    encrypted: ["exists", "equals", "not_equals"],
+    filter: ["exists"],
+    "filter.conditions": ["exists"],
+    richText: ["exists", "contains"],
+    file: ["exists"],
+    percentage: [
+      "exists",
+      "equals",
+      "not_equals",
+      /*'less_than', 'greater_than', 'less_or_equals', 'greater_or_equals',*/ "between"
+    ]
+  };
 
-	function t_operators(lang) {
-		return {
-			pt_BR: {
-				equals: 'igual',
-				not_equals: 'diferente',
-				starts_with: 'começa com',
-				end_with: 'termina com',
-				contains: 'contém',
-				not_contains: 'não contém',
-				less_than: 'menor que',
-				greater_than: 'maior que',
-				less_or_equals: 'menor ou igual a',
-				greater_or_equals: 'maior ou igual a',
-				between: 'entre',
-				current_user: 'usuário logado',
-				not_current_user: 'outro usuário',
-				current_user_group: 'grupo do usuário logado',
-				not_current_user_group: 'outro grupo do usuário',
-				current_user_groups: 'grupos do usuário logado',
-				in: 'está em [ ]',
-				not_in: 'não está em [ ]',
-				exists: 'existe',
-				lookup: 'lookup'
-			},
-			en: {
-				equals: 'equals',
-				not_equals: 'not equals',
-				starts_with: 'starts with',
-				end_with: 'end with',
-				contains: 'contains',
-				not_contains: 'not contains',
-				less_than: 'less than',
-				greater_than: 'greater than',
-				less_or_equals: 'less or equals',
-				greater_or_equals: 'greater or equals',
-				between: 'between',
-				current_user: 'current user',
-				not_current_user: 'not current user',
-				current_user_group: 'current user group',
-				not_current_user_group: 'not current user group',
-				current_user_groups: 'current user groups',
-				in: 'in',
-				not_in: 'not in',
-				exists: 'exists',
-				lookup: 'lookup'
-			}
-		}[lang];
-	}
+  function t_operators(lang) {
+    return {
+      pt_BR: {
+        equals: "igual",
+        not_equals: "diferente",
+        starts_with: "começa com",
+        end_with: "termina com",
+        contains: "contém",
+        not_contains: "não contém",
+        less_than: "menor que",
+        greater_than: "maior que",
+        less_or_equals: "menor ou igual a",
+        greater_or_equals: "maior ou igual a",
+        between: "entre",
+        current_user: "usuário logado",
+        not_current_user: "outro usuário",
+        current_user_group: "grupo do usuário logado",
+        not_current_user_group: "outro grupo do usuário",
+        current_user_groups: "grupos do usuário logado",
+        in: "está em [ ]",
+        not_in: "não está em [ ]",
+        exists: "existe",
+        lookup: "lookup"
+      },
+      en: {
+        equals: "equals",
+        not_equals: "not equals",
+        starts_with: "starts with",
+        end_with: "end with",
+        contains: "contains",
+        not_contains: "not contains",
+        less_than: "less than",
+        greater_than: "greater than",
+        less_or_equals: "less or equals",
+        greater_or_equals: "greater or equals",
+        between: "between",
+        current_user: "current user",
+        not_current_user: "not current user",
+        current_user_group: "current user group",
+        not_current_user_group: "not current user group",
+        current_user_groups: "current user groups",
+        in: "in",
+        not_in: "not in",
+        exists: "exists",
+        lookup: "lookup"
+      }
+    }[lang];
+  }
 
-	// adds a filter in the list
-	function addFilter(row, index, data, kondata, node) {
-		kondata = kondata || data; // to work with editableList when calling addItem programatically
-		$(row).html(
-			`
+  // adds a filter in the list
+  function addFilter(row, index, data, kondata, node) {
+    kondata = kondata || data; // to work with editableList when calling addItem programatically
+    $(row).html(
+      `
       <table style="width:100%">
         <tr>
           <td id="konecty-search-wrapper-term-` +
-				index +
-				`" style="width:auto;">
+        index +
+        `" style="width:auto;">
             <select id="konecty-search-term-` +
-				index +
-				`" class="konecty-search-term" onChange="onChangeTerm(event,` +
-				index +
-				`)" style="width:100%">
+        index +
+        `" class="konecty-search-term" onChange="onChangeTerm(event,` +
+        index +
+        `)" style="width:100%">
               <option></option>
             </select>
           </td>
           <td id="konecty-search-wrapper-operator-` +
-				index +
-				`" style="width:25%; display:none;">
+        index +
+        `" style="width:25%; display:none;">
             <select id="konecty-search-operator-` +
-				index +
-				`" class="konecty-search-operator" onChange="onChangeOperator(event,` +
-				index +
-				`)" style="width:100%;">
+        index +
+        `" class="konecty-search-operator" onChange="onChangeOperator(event,` +
+        index +
+        `)" style="width:100%;">
               <option selected></option>
             </select>
           </td>
           <td id="konecty-search-wrapper-value-` +
-				index +
-				`" style="width:50%; display:none;">
+        index +
+        `" style="width:50%; display:none;">
             <div id="typed-input-wrapper-value1-` +
-				index +
-				`">
+        index +
+        `">
               <input id="konecty-search-value1-` +
-				index +
-				`" class="konecty-search-value1" type="text" style="width:100%;"></input>
+        index +
+        `" class="konecty-search-value1" type="text" style="width:100%;"></input>
             </div>
             <div id="typed-input-wrapper-value2-` +
-				index +
-				`">
+        index +
+        `">
               <input id="konecty-search-value2-` +
-				index +
-				`" class="konecty-search-value2" type="text" style="width:100%;"></input>
+        index +
+        `" class="konecty-search-value2" type="text" style="width:100%;"></input>
             </div>
             <input id="konecty-search-value1-type-` +
-				index +
-				`" class="konecty-search-value1-type" type="hidden"></input>
+        index +
+        `" class="konecty-search-value1-type" type="hidden"></input>
             <input id="konecty-search-value2-type-` +
-				index +
-				`" class="konecty-search-value2-type" type="hidden"></input>
+        index +
+        `" class="konecty-search-value2-type" type="hidden"></input>
             <input id="konecty-search-lookupId-` +
-				index +
-				`" class="konecty-search-lookupId" type="hidden"></input>
+        index +
+        `" class="konecty-search-lookupId" type="hidden"></input>
             <input id="konecty-search-lookupValue-` +
-				index +
-				`" class="konecty-search-lookupValue" type="text" style="width:100%; display:none;"></input>
+        index +
+        `" class="konecty-search-lookupValue" type="text" style="width:100%; display:none;"></input>
           </td>
         </tr>
       </table>
     `
-		);
-		let doc = $('#node-input-doc').val();
-		let termSelect = $('#konecty-search-term-' + index);
-		let fields = kondata[doc] ? kondata[doc]['fields'] : [];
-		if (fields == null) {
-			return;
-		}
-		let ff = fields.map(f => {
-            let label = f.label;
-            if (!label) label = { pt_BR: f.name, en_US: f.name };
-			return { type: f.type, value: f.name, label: label.pt_BR || label.en_US };
-		});
-        ff = sortArrayByAttribute(ff, 'label');
+    );
+    let doc = $("#node-input-doc").val();
+    let termSelect = $("#konecty-search-term-" + index);
+    let fields = kondata[doc] ? kondata[doc]["fields"] : [];
+    if (fields == null) {
+      return;
+    }
+    let ff = fields.map(f => {
+      let label = f.label;
+      if (!label) label = { pt_BR: f.name, en_US: f.name };
+      return { type: f.type, value: f.name, label: label.pt_BR || label.en_US };
+    });
+    ff = sortArrayByAttribute(ff, "label");
 
-		termSelect.append(
-			$('<option></option>')
-				.attr('value', '_id')
-				.attr('data-type', 'text')
-				.text(node._('konecty-search.label.id'))
-		);
-		for (f of ff) {
-			switch (f.type) {
-				case 'address':
-					termSelect.append(
-						$('<option></option>')
-							.attr('value', 'address.country')
-							.attr('data-type', 'address.country')
-							.text('Endereço > País')
-					);
-					termSelect.append(
-						$('<option></option>')
-							.attr('value', 'address.city')
-							.attr('data-type', 'address.city')
-							.text('Endereço > Cidade')
-					);
-					termSelect.append(
-						$('<option></option>')
-							.attr('value', 'address.state')
-							.attr('data-type', 'address.state')
-							.text('Endereço > UF')
-					);
-					termSelect.append(
-						$('<option></option>')
-							.attr('value', 'address.place')
-							.attr('data-type', 'address.place')
-							.text('Endereço > Logradouro')
-					);
-					termSelect.append(
-						$('<option></option>')
-							.attr('value', 'address.district')
-							.attr('data-type', 'address.district')
-							.text('Endereço > Bairro')
-					);
-					termSelect.append(
-						$('<option></option>')
-							.attr('value', 'address.number')
-							.attr('data-type', 'address.number')
-							.text('Endereço > Número')
-					);
-					termSelect.append(
-						$('<option></option>')
-							.attr('value', 'address.postalCode')
-							.attr('data-type', 'address.postalCode')
-							.text('Endereço > CEP')
-					);
-					termSelect.append(
-						$('<option></option>')
-							.attr('value', 'address.complement')
-							.attr('data-type', 'address.complement')
-							.text('Endereço > Complemento')
-					);
-					termSelect.append(
-						$('<option></option>')
-							.attr('value', 'address.geolocation.0')
-							.attr('data-type', 'address.geolocation.0')
-							.text('Endereço > Geolocalização 1')
-					);
-					termSelect.append(
-						$('<option></option>')
-							.attr('value', 'address.geolocation.1')
-							.attr('data-type', 'address.geolocation.1')
-							.text('Endereço > Geolocalização 2')
-					);
-					break;
-				case 'email':
-					termSelect.append(
-						$('<option></option>')
-							.attr('value', f.value + '.address')
-							.attr('data-type', 'email.address')
-							.text(f.label + ' > Endereço')
-					);
-					break;
-				case 'phone':
-					termSelect.append(
-						$('<option></option>')
-							.attr('value', f.value + '.phoneNumber')
-							.attr('data-type', 'phone.phoneNumber')
-							.text(f.label + ' > Número')
-					);
-					break;
-				case 'personName':
-					termSelect.append(
-						$('<option></option>')
-							.attr('value', f.value + '.full')
-							.attr('data-type', 'personName.full')
-							.text(f.label + ' > Completo')
-					);
-					break;
-				case 'inheritLookup':
-				case 'lookup':
-					termSelect.append(
-						$('<option></option>')
-							.attr('value', f.value)
-							.attr('data-type', f.type)
-							.text(f.label)
-					);
-					termSelect.append(
-						$('<option></option>')
-							.attr('value', f.value + '._id')
-							.attr('data-type', 'lookup._id')
-							.text(f.label + ' > id')
-					);
-					break;
-				default:
-					termSelect.append(
-						$('<option></option>')
-							.attr('value', f.value)
-							.attr('data-type', f.type)
-							.text(f.label)
-					);
-					break;
-			}
-		}
-		$('#konecty-search-value1-' + index).typedInput();
-		$('#konecty-search-value2-' + index).typedInput();
-		let types = ['msg', 'flow', 'global', 'str', 'num', 'bool', 'date', 'json', 'jsonata'];
-		$('#konecty-search-value1-' + index).typedInput('types', types);
-		$('#konecty-search-value2-' + index).typedInput('types', types);
-	}
+    termSelect.append(
+      $("<option></option>")
+        .attr("value", "_id")
+        .attr("data-type", "text")
+        .text(node._("konecty-search.label.id"))
+    );
+    for (f of ff) {
+      switch (f.type) {
+        case "address":
+          termSelect.append(
+            $("<option></option>")
+              .attr("value", "address.country")
+              .attr("data-type", "address.country")
+              .text("Endereço > País")
+          );
+          termSelect.append(
+            $("<option></option>")
+              .attr("value", "address.city")
+              .attr("data-type", "address.city")
+              .text("Endereço > Cidade")
+          );
+          termSelect.append(
+            $("<option></option>")
+              .attr("value", "address.state")
+              .attr("data-type", "address.state")
+              .text("Endereço > UF")
+          );
+          termSelect.append(
+            $("<option></option>")
+              .attr("value", "address.place")
+              .attr("data-type", "address.place")
+              .text("Endereço > Logradouro")
+          );
+          termSelect.append(
+            $("<option></option>")
+              .attr("value", "address.district")
+              .attr("data-type", "address.district")
+              .text("Endereço > Bairro")
+          );
+          termSelect.append(
+            $("<option></option>")
+              .attr("value", "address.number")
+              .attr("data-type", "address.number")
+              .text("Endereço > Número")
+          );
+          termSelect.append(
+            $("<option></option>")
+              .attr("value", "address.postalCode")
+              .attr("data-type", "address.postalCode")
+              .text("Endereço > CEP")
+          );
+          termSelect.append(
+            $("<option></option>")
+              .attr("value", "address.complement")
+              .attr("data-type", "address.complement")
+              .text("Endereço > Complemento")
+          );
+          termSelect.append(
+            $("<option></option>")
+              .attr("value", "address.geolocation.0")
+              .attr("data-type", "address.geolocation.0")
+              .text("Endereço > Geolocalização 1")
+          );
+          termSelect.append(
+            $("<option></option>")
+              .attr("value", "address.geolocation.1")
+              .attr("data-type", "address.geolocation.1")
+              .text("Endereço > Geolocalização 2")
+          );
+          break;
+        case "email":
+          termSelect.append(
+            $("<option></option>")
+              .attr("value", f.value + ".address")
+              .attr("data-type", "email.address")
+              .text(f.label + " > Endereço")
+          );
+          break;
+        case "phone":
+          termSelect.append(
+            $("<option></option>")
+              .attr("value", f.value + ".phoneNumber")
+              .attr("data-type", "phone.phoneNumber")
+              .text(f.label + " > Número")
+          );
+          break;
+        case "personName":
+          termSelect.append(
+            $("<option></option>")
+              .attr("value", f.value + ".full")
+              .attr("data-type", "personName.full")
+              .text(f.label + " > Completo")
+          );
+          break;
+        case "inheritLookup":
+        case "lookup":
+          termSelect.append(
+            $("<option></option>")
+              .attr("value", f.value)
+              .attr("data-type", f.type)
+              .text(f.label)
+          );
+          termSelect.append(
+            $("<option></option>")
+              .attr("value", f.value + "._id")
+              .attr("data-type", "lookup._id")
+              .text(f.label + " > id")
+          );
+          break;
+        default:
+          termSelect.append(
+            $("<option></option>")
+              .attr("value", f.value)
+              .attr("data-type", f.type)
+              .text(f.label)
+          );
+          break;
+      }
+    }
+    $("#konecty-search-value1-" + index).typedInput();
+    $("#konecty-search-value2-" + index).typedInput();
+    let types = [
+      "msg",
+      "flow",
+      "global",
+      "str",
+      "num",
+      "bool",
+      "date",
+      "json",
+      "jsonata"
+    ];
+    $("#konecty-search-value1-" + index).typedInput("types", types);
+    $("#konecty-search-value2-" + index).typedInput("types", types);
+  }
 
-	// changes operators based on field type
-	function onChangeTerm(event, index) {
-		let fieldType = $('#konecty-search-term-' + index + ' option:selected').data('type');
-		let operators = operatorsByType[fieldType].map(function(o) {
-			return { label: t_operators('pt_BR')[o], value: o };
-		});
-		$('#konecty-search-wrapper-operator-' + index).show();
-		$('#konecty-search-wrapper-value-' + index).hide();
-		$('#konecty-search-operator-' + index).html('<option selected></option>');
-		$.each(operators, function(idx, op) {
-			$('#konecty-search-operator-' + index).append(
-				$('<option></option>')
-					.attr('value', op.value)
-					.text(op.label)
-			);
-		});
-		onChangeOperator(null, index);
-	}
+  // changes operators based on field type
+  function onChangeTerm(event, index) {
+    let fieldType = $(
+      "#konecty-search-term-" + index + " option:selected"
+    ).data("type");
+    let operators = operatorsByType[fieldType].map(function(o) {
+      return { label: t_operators("pt_BR")[o], value: o };
+    });
+    $("#konecty-search-wrapper-operator-" + index).show();
+    $("#konecty-search-wrapper-value-" + index).hide();
+    $("#konecty-search-operator-" + index).html("<option selected></option>");
+    $.each(operators, function(idx, op) {
+      $("#konecty-search-operator-" + index).append(
+        $("<option></option>")
+          .attr("value", op.value)
+          .text(op.label)
+      );
+    });
+    onChangeOperator(null, index);
+  }
 
-	function onChangeOperator(event, index) {
-		if (event) {
-			let op = event.target.value;
-			if (op == '') {
-				$('#konecty-search-wrapper-value-' + index).hide();
-			} else {
-				$('#konecty-search-wrapper-value-' + index).show();
-				let typedInput1Wrapper = $('#typed-input-wrapper-value1-' + index);
-				let typedInput2Wrapper = $('#typed-input-wrapper-value2-' + index);
-				let lookupValue = $('#konecty-search-lookupValue-' + index);
-				typedInput1Wrapper.hide();
-				typedInput2Wrapper.hide();
-				lookupValue.hide();
-				if (op == 'lookup') lookupDocument(index);
-				else if (op === 'between') typedInput1Wrapper.show() && typedInput2Wrapper.show();
-				else typedInput1Wrapper.show();
-			}
-		}
-	}
+  function onChangeOperator(event, index) {
+    if (event) {
+      let op = event.target.value;
+      if (op == "") {
+        $("#konecty-search-wrapper-value-" + index).hide();
+      } else {
+        $("#konecty-search-wrapper-value-" + index).show();
+        let typedInput1Wrapper = $("#typed-input-wrapper-value1-" + index);
+        let typedInput2Wrapper = $("#typed-input-wrapper-value2-" + index);
+        let lookupValue = $("#konecty-search-lookupValue-" + index);
+        typedInput1Wrapper.hide();
+        typedInput2Wrapper.hide();
+        lookupValue.hide();
+        if (op == "lookup") lookupDocument(index);
+        else if (op === "between")
+          typedInput1Wrapper.show() && typedInput2Wrapper.show();
+        else typedInput1Wrapper.show();
+      }
+    }
+  }
 
-	function lookupDocument(index) {
-		const server = $('#node-input-server').val();
-		const document = $('#node-input-doc')
-			.val()
-			.split(':')[1];
-		const term = $('#konecty-search-term-' + index).val();
-		$('#konecty-search-lookupValue-' + index).show();
-		$('#konecty-search-lookupValue-' + index).autocomplete({
-			source: function(request, response) {
-				$.ajax({
-					url: 'konecty-server/' + server + '/lookup/' + document + '/' + term + '/' + request.term,
-					type: 'GET',
-					dataType: 'json',
-					success: options => {
-						response((options || []).map(opt => ({ id: opt._id, value: opt.name })));
-					}
-				});
-			},
-			minLength: 2,
-			select: function(event, ui) {
-				$('#konecty-search-lookupId-' + index).val(ui.item.id);
-			}
-		});
-	}
+  function lookupDocument(index) {
+    const server = $("#node-input-server").val();
+    const document = $("#node-input-doc")
+      .val()
+      .split(":")[1];
+    const term = $("#konecty-search-term-" + index).val();
+    $("#konecty-search-lookupValue-" + index).show();
+    $("#konecty-search-lookupValue-" + index).autocomplete({
+      source: function(request, response) {
+        $.ajax({
+          url:
+            "konecty-server/" +
+            server +
+            "/lookup/" +
+            document +
+            "/" +
+            term +
+            "/" +
+            request.term,
+          type: "GET",
+          dataType: "json",
+          success: options => {
+            response(
+              (options || []).map(opt => ({ id: opt._id, value: opt.name }))
+            );
+          }
+        });
+      },
+      minLength: 2,
+      select: function(event, ui) {
+        $("#konecty-search-lookupId-" + index).val(ui.item.id);
+      }
+    });
+  }
 
-	// sorts an array of objects by one of its attributes
-	function sortArrayByAttribute(arr, attr) {
-		return arr.sort((a, b) => (a[attr] > b[attr] ? 1 : b[attr] > a[attr] ? -1 : 0));
-	}
+  // sorts an array of objects by one of its attributes
+  function sortArrayByAttribute(arr, attr) {
+    return arr.sort((a, b) =>
+      a[attr] > b[attr] ? 1 : b[attr] > a[attr] ? -1 : 0
+    );
+  }
 
-	// load Documents and fill select options
-	function loadDocuments(kondata, doc) {
-		let documents = [];
-		Object.keys(kondata).forEach(function(key) {
-			if (kondata[key].type === 'document') {
-				documents.push({ value: key, label: kondata[key].label.pt_BR });
-			}
-		});
-		documents = sortArrayByAttribute(documents, 'label');
-		$('#node-input-doc').html('');
-		for (d of documents) {
-			$('#node-input-doc').append(
-				$('<option></option>')
-					.attr('value', d.value)
-					.text(d.label)
-			);
-		}
-		$('#node-input-doc').on('change', function() {
-			$('#node-input-rule-container').editableList('empty');
-		});
-		if (doc) {
-			$('#node-input-doc').val(doc);
-		}
-	}
+  // load Documents and fill select options
+  function loadDocuments(kondata, doc) {
+    let documents = [];
+    Object.keys(kondata).forEach(function(key) {
+      if (kondata[key].type === "document") {
+        documents.push({ value: key, label: kondata[key].label.pt_BR });
+      }
+    });
+    documents = sortArrayByAttribute(documents, "label");
+    $("#node-input-doc").html("");
+    for (d of documents) {
+      $("#node-input-doc").append(
+        $("<option></option>")
+          .attr("value", d.value)
+          .text(d.label)
+      );
+    }
+    $("#node-input-doc").on("change", function() {
+      $("#node-input-rule-container").editableList("empty");
+    });
+    if (doc) {
+      $("#node-input-doc").val(doc);
+    }
+  }
 
-	// loads all existing filters when editing
-	function loadFilters(kondata, filter) {
-		$('#node-input-rule-container').editableList('empty');
+  // loads all existing filters when editing
+  function loadFilters(kondata, filter) {
+    $("#node-input-rule-container").editableList("empty");
 
-		if (filter == undefined) {
-			return;
-		}
+    if (filter == null) {
+      return;
+    }
 
-		let f = JSON.parse(filter);
-		$.each(f.conditions, function(idx, condition) {
-			$('#node-input-rule-container').editableList('addItem', kondata);
-			setTimeout(function() {
-				$('#konecty-search-term-' + idx)
-					.val(condition.term)
-					.change();
-				$('#konecty-search-value1-' + idx)
-					.typedInput('value', condition.value1)
-					.typedInput('type', condition.value1Type);
-				$('#konecty-search-value2-' + idx)
-					.typedInput('value', condition.value2)
-					.typedInput('type', condition.value2Type);
-				$('#konecty-search-operator-' + idx).val(condition.operator);
-				let op = condition.operator;
-				// visibility
-				if (op == '') {
-					$('#konecty-search-wrapper-value-' + idx).hide();
-				} else {
-					$('#konecty-search-wrapper-value-' + idx).show();
-					$('#konecty-search-lookupId-' + idx).val(condition.lookupId);
-					let lookup = $('#konecty-search-lookupValue-' + idx);
-					let typedInput1Wrapper = $('#typed-input-wrapper-value1-' + idx);
-					let typedInput2Wrapper = $('#typed-input-wrapper-value2-' + idx);
-					lookup.val(condition.lookupValue);
-					typedInput1Wrapper.hide();
-					typedInput2Wrapper.hide();
-					lookup.hide();
-					if (op === 'lookup') lookupDocument(idx);
-					else if (op === 'between') typedInput1Wrapper.show() && typedInput2Wrapper.show();
-					else typedInput1Wrapper.show();
-				}
-			}, 10);
-		});
-	}
+    let f = JSON.parse(filter || {});
+    $.each(f.conditions, function(idx, condition) {
+      $("#node-input-rule-container").editableList("addItem", kondata);
+      setTimeout(function() {
+        $("#konecty-search-term-" + idx)
+          .val(condition.term)
+          .change();
+        $("#konecty-search-value1-" + idx)
+          .typedInput("value", condition.value1)
+          .typedInput("type", condition.value1Type);
+        $("#konecty-search-value2-" + idx)
+          .typedInput("value", condition.value2)
+          .typedInput("type", condition.value2Type);
+        $("#konecty-search-operator-" + idx).val(condition.operator);
+        let op = condition.operator;
+        // visibility
+        if (op == "") {
+          $("#konecty-search-wrapper-value-" + idx).hide();
+        } else {
+          $("#konecty-search-wrapper-value-" + idx).show();
+          $("#konecty-search-lookupId-" + idx).val(condition.lookupId);
+          let lookup = $("#konecty-search-lookupValue-" + idx);
+          let typedInput1Wrapper = $("#typed-input-wrapper-value1-" + idx);
+          let typedInput2Wrapper = $("#typed-input-wrapper-value2-" + idx);
+          lookup.val(condition.lookupValue);
+          typedInput1Wrapper.hide();
+          typedInput2Wrapper.hide();
+          lookup.hide();
+          if (op === "lookup") lookupDocument(idx);
+          else if (op === "between")
+            typedInput1Wrapper.show() && typedInput2Wrapper.show();
+          else typedInput1Wrapper.show();
+        }
+      }, 10);
+    });
+  }
 
-	function saveProjections(node){
-		const items = $('#node-input-projection-container').editableList('items');
+  function saveProjections(node) {
+    const items = $("#node-input-projection-container").editableList("items");
 
-		const projection = [];
-		items.each(function(){
-			const row = $(this);
-			const select = row.find('select');
-			projection.push(select.val());
-		})
-		$('#node-input-projections').val(JSON.stringify(projection));
-	}
+    const projection = [];
+    items.each(function() {
+      const row = $(this);
+      const select = row.find("select");
+      projection.push(select.val());
+    });
+    $("#node-input-projections").val(JSON.stringify(projection));
+  }
 
-	// init widgets
-	function initKonectySearch(kondata, doc, filter, node) {
-		loadDocuments(kondata, doc);
-		$('.form-row-search').show();
-		$('#node-input-rule-container').editableList({
-			sortable: true,
-			removable: true,
-			addItem: function(row, index, data) {
-				addFilter(row, index, data, kondata, node);
-			}
-		});
+  function saveSort(node) {
+    const items = $("#node-input-sort-container").editableList("items");
 
-		$('#node-input-projection-container').editableList({
-			sortable: true,
-			removable: true,
-			addItem: function(row, index, data) {
-				let theDoc = $('#node-input-doc').val();
-				let fields = kondata[theDoc] ? kondata[theDoc]['fields'] : [];
-				if (fields == null) {
-					return;
-				}
-				let ff = fields.map(f => {
-                    let label = f.label;
-                    if (!label) label = { pt_BR: f.name, en_US: f.name };
-					return { type: f.type, value: f.name, label: label.pt_BR || label.en_US };
-				});
-				ff = sortArrayByAttribute(ff, 'label'); 
+    const sortOptions = [];
+    items.each(function() {
+      const row = $(this);
+      const propSelect = row.find("select:first-of-type");
+      const directionSelect = row.find("select:last-of-type");
 
-				$('<select></select>')
-					.append(ff.map(field => $(`<option value="${field.value}">${field.label}</option>`)))
-					.val(String(data) || '')
-					.appendTo(row);
-			}
-		});
-		$('#node-input-projection-container').editableList('empty');
-		
-		const projections = JSON.parse(node.projections);
-		projections.forEach(item => $('#node-input-projection-container').editableList('addItem', item));
+      sortOptions.push({
+        property: propSelect.val(),
+        direction: directionSelect.val()
+      });
+    });
+    $("#node-input-sort").val(JSON.stringify(sortOptions));
+  }
 
-		loadFilters(kondata, filter);
-	}
+  // init widgets
+  function initKonectySearch(kondata, doc, filter, node) {
+    loadDocuments(kondata, doc);
+    $(".form-row-search").show();
+    $("#node-input-rule-container").editableList({
+      sortable: true,
+      removable: true,
+      addItem: function(row, index, data) {
+        addFilter(row, index, data, kondata, node);
+      }
+    });
 
-	// stores konecty filter to search api
-	function saveKonectyFilter() {
-		let search_terms = $('.konecty-search-term');
-		let conditions = [];
-		for (let i = 0, j = search_terms.length; i < j; i++) {
-			conditions.push({
-				term: search_terms[i].value,
-				fieldType: $('#konecty-search-term-' + i + ' option:selected').data('type'),
-				operator: $('#konecty-search-operator-' + i).val(),
-				value1: $('#konecty-search-value1-' + i).typedInput('value'),
-				value2: $('#konecty-search-value2-' + i).typedInput('value'),
-				value1Type: $('#konecty-search-value1-' + i).typedInput('type'),
-				value2Type: $('#konecty-search-value2-' + i).typedInput('type'),
-				lookupId: $('#konecty-search-lookupId-' + i).val(),
-				lookupValue: $('#konecty-search-lookupValue-' + i).val()
-			});
-		}
-		$('#node-input-filter').val(JSON.stringify({ match: 'and', conditions: conditions }));
-	}
+    $("#node-input-projection-container").editableList({
+      sortable: true,
+      removable: true,
+      addItem: function(row, index, data) {
+        let theDoc = $("#node-input-doc").val();
+        let fields = kondata[theDoc] ? kondata[theDoc]["fields"] : [];
+        if (fields == null) {
+          return;
+        }
+        let ff = fields.map(f => {
+          let label = f.label;
+          if (!label) label = { pt_BR: f.name, en_US: f.name };
+          return {
+            type: f.type,
+            value: f.name,
+            label: label.pt_BR || label.en_US
+          };
+        });
+        ff = sortArrayByAttribute(ff, "label");
+
+        $("<select></select>")
+          .append(
+            ff.map(field =>
+              $(`<option value="${field.value}">${field.label}</option>`)
+            )
+          )
+          .val(String(data) || "")
+          .appendTo(row);
+      }
+    });
+    $("#node-input-projection-container").editableList("empty");
+
+    const projections = JSON.parse(node.projections || "[]");
+    projections.forEach(item =>
+      $("#node-input-projection-container").editableList("addItem", item)
+    );
+
+    // Sort
+
+    $("#node-input-sort-container").editableList({
+      sortable: true,
+      removable: true,
+      addItem: function(row, index, data) {
+        const theDoc = $("#node-input-doc").val();
+        const fields = kondata[theDoc] ? kondata[theDoc]["fields"] : [];
+        if (fields == null) {
+          return;
+        }
+        let ff = fields.map(f => {
+          let label = f.label;
+          if (!label) label = { pt_BR: f.name, en_US: f.name };
+          return {
+            type: f.type,
+            value: f.name,
+            label: label.pt_BR || label.en_US
+          };
+        });
+        ff = sortArrayByAttribute(ff, "label");
+
+        const sortOption = data || {};
+
+        $("<select></select>")
+          .attr("style", "width:calc(50% - 4px);margin-right:8px;")
+          .append(
+            ff.map(field =>
+              $(`<option value="${field.value}">${field.label}</option>`)
+            )
+          )
+          .val(sortOption.property || "")
+          .appendTo(row);
+
+        $("<select></select>")
+          .attr("style", "width:calc(50% - 4px);")
+          .append(
+            ["ASC", "DESC"].map(v => $(`<option value="${v}">${v}</option>`))
+          )
+          .val(sortOption.direction || "")
+          .appendTo(row);
+      }
+    });
+    $("#node-input-sort-container").editableList("empty");
+
+    const sortOptions = JSON.parse(node.sort || "[]");
+    sortOptions.forEach(item =>
+      $("#node-input-sort-container").editableList("addItem", item)
+    );
+
+    loadFilters(kondata, filter);
+  }
+
+  // stores konecty filter to search api
+  function saveKonectyFilter() {
+    let search_terms = $(".konecty-search-term");
+    let conditions = [];
+    for (let i = 0, j = search_terms.length; i < j; i++) {
+      conditions.push({
+        term: search_terms[i].value,
+        fieldType: $("#konecty-search-term-" + i + " option:selected").data(
+          "type"
+        ),
+        operator: $("#konecty-search-operator-" + i).val(),
+        value1: $("#konecty-search-value1-" + i).typedInput("value"),
+        value2: $("#konecty-search-value2-" + i).typedInput("value"),
+        value1Type: $("#konecty-search-value1-" + i).typedInput("type"),
+        value2Type: $("#konecty-search-value2-" + i).typedInput("type"),
+        lookupId: $("#konecty-search-lookupId-" + i).val(),
+        lookupValue: $("#konecty-search-lookupValue-" + i).val()
+      });
+    }
+    $("#node-input-filter").val(
+      JSON.stringify({ match: "and", conditions: conditions })
+    );
+  }
 </script>
 
 <script type="text/javascript">
-	var getCredentials = function() {
-		return null;
-	};
+  var getCredentials = function() {
+    return null;
+  };
 
-	RED.nodes.registerType('konecty-search', {
-		category: 'Konecty',
-		color: '#68B7E0',
-		defaults: {
-			server: { value: '', type: 'konecty-server' },
-			name: { value: '' },
-			doc: { value: '' },
-			filter: { value: '' },
-			token: { value: '', validate: RED.validators.typedInput('tokenType') },
-			tokenType: { value: 'str' },
-            limit: { value: 0 },
-            start: { value: 0 },
-            startType: { value: 0 },
-            debugMode: { value: false },
-			projections: { value: '[]' }
-		},
-		oneditprepare: function() {
-			const node = this;
+  RED.nodes.registerType("konecty-search", {
+    category: "Konecty",
+    color: "#68B7E0",
+    defaults: {
+      server: { value: "", type: "konecty-server" },
+      name: { value: "" },
+      doc: { value: "" },
+      filter: { value: null },
+      token: { value: "", validate: RED.validators.typedInput("tokenType") },
+      tokenType: { value: "str" },
+      limit: { value: 0 },
+      start: { value: 0 },
+      startType: { value: 0 },
+      debugMode: { value: false },
+      projections: { value: "[]" },
+      sort: { value: "[]" }
+    },
+    oneditprepare: function() {
+      const node = this;
 
-            $('#node-input-start').typedInput({
-				default: node.startType || 'num',
-				types: ['msg', 'flow', 'global', 'num', 'jsonata']
-			});
+      $("#node-input-start").typedInput({
+        default: node.startType || "num",
+        types: ["msg", "flow", "global", "num", "jsonata"]
+      });
 
-			$('#node-input-token').typedInput({
-				default: node.tokenType || 'str',
-				types: ['msg', 'flow', 'global', 'env', 'str']
-			});
+      $("#node-input-token").typedInput({
+        default: node.tokenType || "str",
+        types: ["msg", "flow", "global", "env", "str"]
+      });
 
-			$('#node-input-server').on('change', function() {
-				const server = $('#node-input-server').val();
-				if (server == '_ADD_') {
-					return;
-				}
-				$.ajax({
-					url: 'konecty-server/' + server + '/menu',
-					type: 'GET',
-					success: function(kondata) {
-						initKonectySearch(kondata, node.doc, node.filter, node);
-					},
-					error: function(jqXHR, textStatus, errorThrown) {
-						if (jqXHR.status == 404) {
-							RED.notify(
-								node._('common.notification.error', { message: node._('common.notification.errors.not-deployed') }),
-								'error'
-							);
-						} else if (jqXHR.status == 500) {
-							RED.notify(node._('common.notification.error', { message: node._('inject.errors.failed') }), 'error');
-						} else if (jqXHR.status == 0) {
-							RED.notify(
-								node._('common.notification.error', { message: node._('common.notification.errors.no-response') }),
-								'error'
-							);
-						} else {
-							RED.notify(
-								node._('common.notification.error', {
-									message: node._('common.notification.errors.unexpected', { status: jqXHR.status, message: textStatus })
-								}),
-								'error'
-							);
-						}
-					}
-				});
-			});
-		},
-		oneditsave: function() {
-			const node = this;
-			node.tokenType = $('#node-input-token').typedInput('type');
-            node.startType = $('#node-input-start').typedInput('type');
-			saveKonectyFilter();
-			saveProjections(node);
-		},
-		inputs: 1,
-		outputs: 1,
-		icon: 'konecty.png',
-		paletteLabel: 'Retrieve Documents',
-		label: function() {
-			return this.name || 'Retrieve Documents';
-		}
-	});
+      $("#node-input-server").on("change", function() {
+        const server = $("#node-input-server").val();
+        if (server == "_ADD_") {
+          return;
+        }
+        $.ajax({
+          url: "konecty-server/" + server + "/menu",
+          type: "GET",
+          success: function(kondata) {
+            initKonectySearch(kondata, node.doc, node.filter, node);
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status == 404) {
+              RED.notify(
+                node._("common.notification.error", {
+                  message: node._("common.notification.errors.not-deployed")
+                }),
+                "error"
+              );
+            } else if (jqXHR.status == 500) {
+              RED.notify(
+                node._("common.notification.error", {
+                  message: node._("inject.errors.failed")
+                }),
+                "error"
+              );
+            } else if (jqXHR.status == 0) {
+              RED.notify(
+                node._("common.notification.error", {
+                  message: node._("common.notification.errors.no-response")
+                }),
+                "error"
+              );
+            } else {
+              RED.notify(
+                node._("common.notification.error", {
+                  message: node._("common.notification.errors.unexpected", {
+                    status: jqXHR.status,
+                    message: textStatus
+                  })
+                }),
+                "error"
+              );
+            }
+          }
+        });
+      });
+    },
+    oneditsave: function() {
+      const node = this;
+      node.tokenType = $("#node-input-token").typedInput("type");
+      node.startType = $("#node-input-start").typedInput("type");
+      saveKonectyFilter();
+      saveProjections(node);
+      saveSort(node);
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "konecty.png",
+    paletteLabel: "Retrieve Documents",
+    label: function() {
+      return this.name || "Retrieve Documents";
+    }
+  });
 </script>
