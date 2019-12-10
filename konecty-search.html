@@ -292,7 +292,7 @@
             if (!label) label = { pt_BR: f.name, en_US: f.name };
 			return { type: f.type, value: f.name, label: label.pt_BR || label.en_US };
 		});
-		ff = sortArrayByAttribute(ff, 'label');
+        ff = sortArrayByAttribute(ff, 'label');
 
 		termSelect.append(
 			$('<option></option>')
@@ -369,7 +369,7 @@
 						$('<option></option>')
 							.attr('value', f.value + '.address')
 							.attr('data-type', 'email.address')
-							.text('Email > Endereço')
+							.text(f.label + ' > Endereço')
 					);
 					break;
 				case 'phone':
@@ -377,7 +377,7 @@
 						$('<option></option>')
 							.attr('value', f.value + '.phoneNumber')
 							.attr('data-type', 'phone.phoneNumber')
-							.text('Telefone > Número')
+							.text(f.label + ' > Número')
 					);
 					break;
 				case 'personName':
@@ -385,7 +385,7 @@
 						$('<option></option>')
 							.attr('value', f.value + '.full')
 							.attr('data-type', 'personName.full')
-							.text('Nome > Completo')
+							.text(f.label + ' > Completo')
 					);
 					break;
 				case 'inheritLookup':

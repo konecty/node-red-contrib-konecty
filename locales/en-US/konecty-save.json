@@ -10,7 +10,8 @@
 			"ids": "Identifiers",
 			"form": "Form",
 			"autocomplete": "Find",
-			"editor": "Editor",
+            "editor": "Editor",
+            "debug-mode": "Debug mode",
 			"default-label": "Save Document",
 			"token": "User Token"
 		},

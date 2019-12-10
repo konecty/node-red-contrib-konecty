@@ -22,7 +22,11 @@
 					<option value="create" data-i18n="konecty-save.actions.create"></option>
 					<option value="update" data-i18n="konecty-save.actions.update"></option>
 			</select>
-	</div>
+    </div>
+    <div class="form-row">
+        <label for="node-input-debugMode"><i class="fa fa-bug"></i> <span data-i18n="konecty-save.label.debug-mode"></span></label>
+        <input type="checkbox" id="node-input-debugMode" style="vertical-align:top;width: 20px;" />
+    </div>
 		<div class="form-row node-input-code-container-row">
 				<input type="hidden" id="node-input-ids">
 				<label for="node-input-code-container"><i class="fa fa-file-text"></i> <span data-i18n="konecty-save.label.ids"></span></label>
@@ -81,7 +85,7 @@
 			}
 		}
 	}
-	function createSubField(node, group, name, container, fieldData) {
+	function createSaveSubField(node, group, name, container, fieldData) {
 		var id = 'node-input-field-' + group + '-' + name + '-' + RED.nodes.id();
 		var className = 'node-input-field-' + name;
 
@@ -248,7 +252,7 @@
 												});
 											break;
 										case 'address':
-											var subForm = buildSubFormBox(node, row2, 'konecty-save.address.title', 'fa-map-marker', formClassName);
+											var subForm = buildSaveSubFormBox(node, row2, 'konecty-save.address.title', 'fa-map-marker', formClassName);
 
 											[
 												'country',
@@ -262,7 +266,7 @@
 												'complement',
 												'type'
 											].forEach(function(fieldName) {
-												createSubField(node, 'address', fieldName, subForm, fieldData);
+												createSaveSubField(node, 'address', fieldName, subForm, fieldData);
 											});
 
 											$('<input/>', {
@@ -295,9 +299,9 @@
 												});
 											break;
 										case 'personName':
-											var subFormName = buildSubFormBox(node, row2, 'konecty-save.name.title', 'fa-id-card', formClassName);
+											var subFormName = buildSaveSubFormBox(node, row2, 'konecty-save.name.title', 'fa-id-card', formClassName);
 											['first', 'last', 'full'].forEach(function(fieldName) {
-												createSubField(node, 'name', fieldName, subFormName, fieldData);
+												createSaveSubField(node, 'name', fieldName, subFormName, fieldData);
 											});
 
 											$('<input/>', {
@@ -483,7 +487,7 @@
 			});
 	}
 
-	function buildSubFormBox(node, container, title, icon, className) {
+	function buildSaveSubFormBox(node, container, title, icon, className) {
 		$('<div />', { class: 'form-row ' })
 			.append($('<i />', { class: 'fa ' + icon }))
 			.append('&nbsp;')
@@ -754,7 +758,7 @@
 			action: { value: 'create', required: true },
 			ids: { value: [] },
 			data: { value: [] },
-
+            debugMode: { value: false },
 			token: { value: '', validate: RED.validators.typedInput('tokenType') },
 			tokenType: { value: 'str' }
 		},

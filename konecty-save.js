@@ -53,7 +53,7 @@ module.exports = function(RED) {
 						case 'dateTime':
                             value = RED.util.evaluateNodeProperty(v, vt, this, msg);
                             if (value instanceof Date) {
-                                value = { $date: new Date(RED.util.evaluateNodeProperty(v, vt, this, msg)).toISOString() };
+                                value = { $date: new Date(value).toISOString() };
                             }
 							break;
 						case 'lookup':
@@ -72,7 +72,9 @@ module.exports = function(RED) {
 							break;
 						case 'money':
 							if (STANDARD_TYPES.includes(vt)) {
-								value = { value: Number(RED.util.evaluateNodeProperty(v, vt, this, msg)) };
+                                value = RED.util.evaluateNodeProperty(v, vt, this, msg);
+                                if (typeof value === 'string' || typeof value === 'number')
+								    value = { value: Number(RED.util.evaluateNodeProperty(v, vt, this, msg)), currency: 'BRL' };
 							} else {
 								value = {
 									currency: vt,
@@ -163,7 +165,11 @@ module.exports = function(RED) {
 						text: RED._('konecty-save.errors.error-processing', { message: errMessages })
 					});
 				}
-			};
+            };
+            
+            if (config.debugMode) {
+                node.warn({ body })
+            }
 
 			if (config.action === 'update') {
                 var codes;
@@ -175,6 +181,10 @@ module.exports = function(RED) {
                 } else {
                     codes = msg.ids;
                 }
+                if (config.debugMode) {
+                    node.warn({ codes })
+                }
+
 				if (!Array.isArray(codes) || codes.length === 0) {
 					node.warn(RED._('konecty-save.errors.invalid-ids'));
 					node.status({ fill: 'red', shape: 'ring', text: 'konecty-save.errors.invalid-ids' });

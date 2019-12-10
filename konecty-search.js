@@ -14,8 +14,12 @@ module.exports = function(RED) {
 			// FILTER EVALUATION
 			let filter = JSON.parse(config.filter);
 			for (let i = 0, j = filter.conditions.length; i < j; i++) {
-				let c = filter.conditions[i];
-				c.value1 = RED.util.evaluateNodeProperty(c.value1, c.value1Type, this, msg);
+                let c = filter.conditions[i];
+                
+                if (c.value1 && c.value1.length) {
+                    c.value1 = RED.util.evaluateNodeProperty(c.value1, c.value1Type, this, msg);
+                }
+                console.log("TCL: KonectySearchNode -> c.value1", c.value1)
 
 				if (!!c.value2) {
 					c.value2 = RED.util.evaluateNodeProperty(c.value2, c.value2Type, this, msg);
@@ -44,8 +48,10 @@ module.exports = function(RED) {
 				}
 			}
 			
+            console.log("TCL: KonectySearchNode -> filter.conditions", filter.conditions)
 			// Ensure that the condition will have value property
 			filter.conditions = filter.conditions.filter(item => ![null, undefined, NaN].includes(item.value));
+            console.log("TCL: KonectySearchNode -> filter.conditions", filter.conditions)
 
 			let root_url = node.server.host;
 			if (root_url.endsWith('/')) {
