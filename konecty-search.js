@@ -23,8 +23,6 @@ module.exports = function(RED) {
             msg
           );
         }
-        console.log("TCL: KonectySearchNode -> c.value1", c.value1);
-
         if (!!c.value2) {
           c.value2 = RED.util.evaluateNodeProperty(
             c.value2,
@@ -71,17 +69,9 @@ module.exports = function(RED) {
         }
       }
 
-      console.log(
-        "TCL: KonectySearchNode -> filter.conditions",
-        filter.conditions
-      );
       // Ensure that the condition will have value property
       filter.conditions = filter.conditions.filter(
         item => ![null, undefined, NaN].includes(item.value)
-      );
-      console.log(
-        "TCL: KonectySearchNode -> filter.conditions",
-        filter.conditions
       );
 
       let root_url = node.server.host;
