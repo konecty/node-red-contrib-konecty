@@ -34,7 +34,7 @@ module.exports = function(RED) {
 
             if (config.to && config.to.length > 0) {
 				data.unshift({ n: "to", t: "text", vt: config.toType, v: config.to, il: false });
-				data.unshift({ n: "status", t: "picklist", vt: 'opt', v: 'Enviar', il: false });
+				data.unshift({ n: "status", t: "picklist", vt: 'opt', v: 'Send', il: false });
 			}
 
 			let body = data.reduce((acc, { n, t, vt, v, il }) => {
