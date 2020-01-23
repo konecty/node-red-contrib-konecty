@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-konecty",
-  "version": "1.6.3",
+  "version": "1.6.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/Konecty/node-red-contrib-konecty"
