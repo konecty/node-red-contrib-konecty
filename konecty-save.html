@@ -184,20 +184,6 @@
 										.val(!!field.isList);
 
 									switch (field.type) {
-										case 'text':
-										case 'url':
-										case 'encrypted':
-										case 'ObjectId':
-										case 'date':
-										case 'dateTime':
-                                        case 'json':
-											$('<input/>', { class: fieldClassName, type: 'text', style: style })
-												.appendTo(row)
-												.typedInput({
-													default: 'msg',
-													types: ['msg', 'flow', 'global', 'str', 'env', 'jsonata']
-												});
-											break;
 										case 'email':
 											var typeOptions = Object.keys(field.typeOptions) || [];
 
@@ -462,6 +448,21 @@
 													}
 												});
 
+                                            break;
+                                        // case 'text':
+										// case 'url':
+										// case 'encrypted':
+										// case 'ObjectId':
+										// case 'date':
+										// case 'dateTime':
+                                        // case 'json':
+                                        default:
+											$('<input/>', { class: fieldClassName, type: 'text', style: style })
+												.appendTo(row)
+												.typedInput({
+													default: 'msg',
+													types: ['msg', 'flow', 'global', 'str', 'env', 'jsonata']
+												});
 											break;
 									}
 									if (fieldData != null) {
