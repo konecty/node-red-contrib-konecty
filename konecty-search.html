@@ -487,6 +487,14 @@
               .text(f.label + " > Completo")
           );
           break;
+        case "money":
+          termSelect.append(
+            $("<option></option>")
+              .attr("value", f.value + ".value")
+              .attr("data-type", "money.value")
+              .text(f.label + " > Valor")
+          );
+          break;
         case "inheritLookup":
         case "lookup":
           termSelect.append(
