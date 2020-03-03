@@ -1,5 +1,6 @@
 const api = require('./api');
 const STANDARD_TYPES = ['str', 'num', 'json', 're', 'date', 'bin', 'msg', 'flow', 'global', 'bool', 'jsonata', 'env'];
+const insp = require('util').inspect;
 module.exports = function(RED) {
 	function KonectySaveNode(config) {
 		RED.nodes.createNode(this, config);
@@ -35,7 +36,7 @@ module.exports = function(RED) {
 				return;
 			}
 
-			let body = data.reduce((acc, { n, t, vt, v, il }) => {
+			let body = data.reduce((acc, { n, t, vt, v, il, un }) => {
 				let value;
 				try {
 					switch (t) {
@@ -113,7 +114,10 @@ module.exports = function(RED) {
 					}
 					if (/true/i.test(il) && !Array.isArray(value)) {
 						return { ...acc, [n]: [value] };
-					}
+                    }
+                    if (un) {
+                        return { ...acc, [n]: { value, unset: true } };
+                    }
 					return { ...acc, [n]: value };
 				} catch(_) {
 					return acc;
@@ -122,7 +126,10 @@ module.exports = function(RED) {
 
 			// Remove null-like values from body
 			body = Object.keys(body).reduce((accum, key) => {
-				const item = body[key];
+                const item = body[key];
+                if (item && item.unset) {
+                    return Object.assign(accum, { [key]: item.value === undefined ? null : item.value });
+                }
 				if (item == null) {
 					return accum;
 				}

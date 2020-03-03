@@ -1,4 +1,18 @@
 <script type="text/x-red" data-template-name="konecty-save">
+        <style>
+            .red-ui-editor .red-ui-button.active-button{ 
+                background-color: #a2a2a2; 
+                color: #fff!important 
+            }
+            .red-ui-editor .red-ui-button.red-ui-editableList-item-remove {
+                top: 70%
+            }
+            .red-ui-editor .red-ui-button#unset {
+                top: 20%;
+                width: 20px;
+                padding: 0;
+            }
+        </style>
 		<div class="form-row">
 				<label for="node-input-server"><i class="fa fa-globe"></i> Konecty</label>
 				<input type="text" id="node-input-server" placeholder="Konecty Server">
@@ -152,7 +166,13 @@
 									.text(getLabel(field))
 							);
 						}
-					});
+                    });
+                    
+                    // Unset if null button
+                    var a = $('<a></a>', { href: "#", class: "red-ui-editableList-item-remove red-ui-button red-ui-button-small", id: "unset", title: "Unset If Null" });
+                    a.click(function(){ $(this).toggleClass('active-button'); });
+                    $('<i></i>', { class: "fa fa-eraser" }).appendTo(a);
+                    a.appendTo(container);
 
 					row2.hide();
 					var types = ['msg', 'flow', 'global', 'env'];
@@ -471,8 +491,12 @@
 										if (fieldData.vt === 'form') {
 										} else {
 											fieldInput.typedInput('value', fieldData.v);
-										}
-									}
+                                        }
+                                        if (fieldData.un) {
+                                            a.toggleClass('active-button', true);
+                                        }
+                                    }
+                                    
 								}
 							}
 						})
@@ -549,7 +573,8 @@
 			var dataRow = $(this);
 			var fieldName = $('.node-input-field-id', dataRow).val();
 			var fieldType = $('.node-input-field-type', dataRow).val();
-			var fieldIsList = $('.node-input-field-isList', dataRow).val();
+            var fieldIsList = $('.node-input-field-isList', dataRow).val();
+            var fieldUnset = !!$('.red-ui-button.active-button', dataRow).length;
 
 			var valueInput = dataRow.find('.node-input-field-value');
 			var valueType = valueInput.typedInput('type');
@@ -582,7 +607,8 @@
 				t: fieldType,
 				vt: valueType,
 				v: valueValue,
-				il: fieldIsList
+                il: fieldIsList,
+                un: fieldUnset
 			});
 		});
 
