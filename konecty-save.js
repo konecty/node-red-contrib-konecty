@@ -1,6 +1,6 @@
 const api = require('./api');
 const STANDARD_TYPES = ['str', 'num', 'json', 're', 'date', 'bin', 'msg', 'flow', 'global', 'bool', 'jsonata', 'env'];
-const insp = require('util').inspect;
+
 module.exports = function(RED) {
 	function KonectySaveNode(config) {
 		RED.nodes.createNode(this, config);
@@ -21,13 +21,15 @@ module.exports = function(RED) {
 
 			const apiInstance = api({ host, key: token });
 
-            var data;
-            if (typeof config.data === 'object')
+			var data;
+			if (typeof config.data === 'object')
 				data = config.data;
 			else if (typeof config.data === 'string')
 				data = JSON.parse(config.data);
-            else
-                data = config.payload;
+
+			if (!data || (Array.isArray(data) && !data.length)) {
+				data = [].concat(msg.payload);
+			}
 
 			node.status({});
 			if (!Array.isArray(data) || data.length === 0) {
@@ -52,10 +54,10 @@ module.exports = function(RED) {
 							break;
 						case 'date':
 						case 'dateTime':
-                            value = RED.util.evaluateNodeProperty(v, vt, this, msg);
-                            if (value instanceof Date) {
-                                value = { $date: new Date(value).toISOString() };
-                            }
+							value = RED.util.evaluateNodeProperty(v, vt, this, msg);
+							if (value instanceof Date) {
+									value = { $date: new Date(value).toISOString() };
+							}
 							break;
 						case 'lookup':
 							if (vt === 'form') {
@@ -73,9 +75,9 @@ module.exports = function(RED) {
 							break;
 						case 'money':
 							if (STANDARD_TYPES.includes(vt)) {
-                                value = RED.util.evaluateNodeProperty(v, vt, this, msg);
-                                if (typeof value === 'string' || typeof value === 'number')
-								    value = { value: Number(RED.util.evaluateNodeProperty(v, vt, this, msg)), currency: 'BRL' };
+								value = RED.util.evaluateNodeProperty(v, vt, this, msg);
+								if (typeof value === 'string' || typeof value === 'number')
+									value = { value: Number(RED.util.evaluateNodeProperty(v, vt, this, msg)), currency: 'BRL' };
 							} else {
 								value = {
 									currency: vt,
@@ -112,39 +114,33 @@ module.exports = function(RED) {
 							value = RED.util.evaluateNodeProperty(v, vt, this, msg);
 							break;
 					}
+
+					var original = RED.util.evaluateNodeProperty(v, vt, this, msg);
 					if (/true/i.test(il) && !Array.isArray(value)) {
-						return { ...acc, [n]: [value] };
-                    }
-                    if (un) {
-                        return { ...acc, [n]: { value, unset: true } };
-                    }
-					return { ...acc, [n]: value };
+						return { ...acc, [n]: { value: [value], original, un } };
+					}
+
+					return { ...acc, [n]: { value, original, un } };
 				} catch(_) {
 					return acc;
 				}
-            }, {});
+			}, {});
 
 			// Remove null-like values from body
 			body = Object.keys(body).reduce((accum, key) => {
-                const item = body[key];
-                if (item && item.unset) {
-                    return Object.assign(accum, { [key]: item.value === undefined ? null : item.value });
-                }
-				if (item == null) {
+				const item = body[key];
+				if (item && item.un) {
+						return Object.assign(accum, { [key]: item.original === undefined ? null : item.value });
+				}
+				if (item.value == null) {
 					return accum;
 				}
-				if (Array.isArray(item)) {
-					const first = item[0];
-					if (first == null || (first.__proto__ === Object.prototype && first.hasOwnProperty('_id') && first._id == null)) {
+				if (Object.prototype.isPrototypeOf(item.value)) {
+					if (item.value.hasOwnProperty('_id') && item.value._id == null) {
 						return accum;
 					}
 				}
-				if (item.__proto__ === Object.prototype) {
-					if (item.hasOwnProperty('_id') && item._id == null) {
-						return accum;
-					}
-				}
-				return Object.assign(accum, { [key]: item });
+				return Object.assign(accum, { [key]: item.value });
 			}, {});
 
 			const handleKonectyResponse = ({ success, data, errors }) => {
@@ -172,25 +168,24 @@ module.exports = function(RED) {
 						text: RED._('konecty-save.errors.error-processing', { message: errMessages })
 					});
 				}
-            };
+			};
             
-            if (config.debugMode) {
-                node.warn({ body })
-            }
+			if (config.debugMode) {
+					node.warn({ body })
+			}
 
 			if (config.action === 'update') {
-                var codes;
-				if (config.ids) {
-                    if (typeof config.ids === 'object')
-                        codes = config.ids;
-                    else if (typeof config.ids === 'string')
-                        codes = JSON.parse(config.ids);
-                } else {
-                    codes = msg.ids;
-                }
-                if (config.debugMode) {
-                    node.warn({ codes })
-                }
+				var codes;
+				if (typeof config.ids === 'object')
+					codes = config.ids;
+				else if (typeof config.ids === 'string')
+					codes = JSON.parse(config.ids);
+
+				if (!codes) codes = [].concat(msg.ids);
+
+				if (config.debugMode) {
+					node.warn({ codes })
+				}
 
 				if (!Array.isArray(codes) || codes.length === 0) {
 					node.warn(RED._('konecty-save.errors.invalid-ids'));
