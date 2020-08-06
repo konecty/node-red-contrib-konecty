@@ -116,7 +116,7 @@ module.exports = function(RED) {
 					}
 
 					var original = RED.util.evaluateNodeProperty(v, vt, this, msg);
-					if (/true/i.test(il) && !Array.isArray(value)) {
+					if (/true/i.test(il) && value != null && !Array.isArray(value)) {
 						return { ...acc, [n]: { value: [value], original, un } };
 					}
 
