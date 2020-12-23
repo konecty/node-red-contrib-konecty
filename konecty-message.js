@@ -18,21 +18,22 @@ module.exports = function(RED) {
 			}
 
 			const apiInstance = api({ host, key: token });
-
-            var data = JSON.parse(config.extraFields) || msg.payload;
+      var data = JSON.parse(config.extraFields) || msg.payload;
 
 			node.status({});
 			if (!Array.isArray(data) || data.length === 0) {
 				node.warn(RED._('konecty-message.errors.invalid-data'));
-				node.status({ fill: 'red', shape: 'ring', text: 'konecty-message.errors.invalid-data' });
+        node.status({ fill: 'red', shape: 'ring', text: 'konecty-message.errors.invalid-data' });
+        
+        node.send([null, { ...msg, payload: [RED._('konecty-message.errors.invalid-data')] }]);
 				return;
-            }
+      }
             
-            data.unshift({ n: "type", t: "picklist", vt: config.originType, v: config.origin, il: false });
-            data.unshift({ n: "subject", t: "text", vt: config.subjectType, v: config.subject, il: false });
-            data.unshift({ n: "body", t: "richText", vt: config.messageType, v: config.message, il: false });
+      data.unshift({ n: "type", t: "picklist", vt: config.originType, v: config.origin, il: false });
+      data.unshift({ n: "subject", t: "text", vt: config.subjectType, v: config.subject, il: false });
+      data.unshift({ n: "body", t: "richText", vt: config.messageType, v: config.message, il: false });
 
-            if (config.to && config.to.length > 0) {
+      if (config.to && config.to.length > 0) {
 				data.unshift({ n: "to", t: "text", vt: config.toType, v: config.to, il: false });
 				data.unshift({ n: "status", t: "picklist", vt: 'opt', v: 'Send', il: false });
 			}
@@ -160,7 +161,7 @@ module.exports = function(RED) {
 				}
 			};
 
-            apiInstance.create('Message', body).then(handleKonectyResponse);			
+      apiInstance.create('Message', body).then(handleKonectyResponse);			
 		});
 	}
 	RED.nodes.registerType('konecty-message', KonectyMessageNode);

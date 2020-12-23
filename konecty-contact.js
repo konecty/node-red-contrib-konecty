@@ -9,7 +9,13 @@ module.exports = function(RED) {
 			const { host, key } = node.server;
 			const { fullname, fullnameType, email, emailType, phoneNumber, phoneNumberType, extraFields, extraFieldsType } = config;
 
-			// Prepare payload
+			const sendError = payload =>  node.send([
+        null,
+        {
+          ...msg,
+          payload
+        }
+      ]);
 
 			const contactData = {
 				name: RED.util.evaluateNodeProperty(fullname, fullnameType, this, msg),
@@ -20,7 +26,9 @@ module.exports = function(RED) {
 			if (contactData.phone != null) {
 				if (!/^([0-9]){10,11}$/.test(contactData.phone)) {
 					node.warn(RED._('konecty-contact.errors.invalid-phone'));
-					node.status({ fill: 'red', shape: 'ring', text: RED._('konecty-contact.errors.invalid-phone') });
+          node.status({ fill: 'red', shape: 'ring', text: RED._('konecty-contact.errors.invalid-phone') });
+          
+          sendError([RED._('konecty-contact.errors.invalid-phone')]);
 					return;
 				}
 			} else {
@@ -29,7 +37,9 @@ module.exports = function(RED) {
 			if (contactData.email != null) {
 				if (!/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(contactData.email)) {
 					node.warn(RED._('konecty-contact.errors.invalid-email'));
-					node.status({ fill: 'red', shape: 'ring', text: RED._('konecty-contact.errors.invalid-email') });
+          node.status({ fill: 'red', shape: 'ring', text: RED._('konecty-contact.errors.invalid-email') });
+          
+          sendError([RED._('konecty-contact.errors.invalid-email')]);
 					return;
 				}
 			} else {
@@ -38,7 +48,9 @@ module.exports = function(RED) {
 
 			if (contactData.phone == null && contactData.email == null) {
 				node.warn(RED._('konecty-contact.errors.phone-or-email-is-required'));
-				node.status({ fill: 'red', shape: 'ring', text: RED._('konecty-contact.errors.phone-or-email-is-required') });
+        node.status({ fill: 'red', shape: 'ring', text: RED._('konecty-contact.errors.phone-or-email-is-required') });
+        
+        sendError([RED._('konecty-contact.errors.phone-or-email-is-required')]);
 				return;
 			}
 
@@ -84,9 +96,12 @@ module.exports = function(RED) {
 
 			if (Object.keys(contactData).length === 0) {
 				node.warn(RED._('konecty-contact.errors.invalid-data'));
-				node.status({ fill: 'red', shape: 'ring', text: RED._('konecty-contact.errors.invalid-data') });
+        node.status({ fill: 'red', shape: 'ring', text: RED._('konecty-contact.errors.invalid-data') });
+        
+        sendError([RED._('konecty-contact.errors.invalid-data')]);
 				return;
-			}
+      }
+
 			node.status({ fill: 'blue', shape: 'ring', text: RED._('konecty-contact.label.running') });
 			apiInstance
 				.createContact(contactData)
@@ -100,13 +115,7 @@ module.exports = function(RED) {
 						]);
 						node.status({});
 					} else {
-						node.send([
-							null,
-							{
-								...msg,
-								payload: errors
-							}
-						]);
+						sendError(errors);
 						const errMessages = errors.map(({ message }) => message).join('\n');
 						node.error(RED._('konecty-contact.errors.error-processing', { message: errMessages }));
 						node.status({
@@ -116,7 +125,8 @@ module.exports = function(RED) {
 						});
 					}
 				})
-				.catch(error => {
+				.catch(error => {     
+          sendError(error);     
 					node.error(RED._('konecty-contact.errors.error-processing', error));
 					node.status({
 						fill: 'red',

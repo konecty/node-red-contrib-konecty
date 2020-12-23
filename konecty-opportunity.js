@@ -60,7 +60,9 @@ module.exports = function(RED) {
 
 			if (Object.keys(opportunityData).length === 0) {
 				node.warn(RED._('konecty-opportunity.errors.invalid-data'));
-				node.status({ fill: 'red', shape: 'ring', text: RED._('konecty-opportunity.errors.invalid-data') });
+        node.status({ fill: 'red', shape: 'ring', text: RED._('konecty-opportunity.errors.invalid-data') });
+        
+        node.send([null, { ...msg, payload: [RED._('konecty-opportunity.errors.invalid-data')] }]);
 				return;
 			}
 			node.status({ fill: 'blue', shape: 'ring', text: RED._('konecty-opportunity.label.running') });
@@ -93,6 +95,7 @@ module.exports = function(RED) {
 					}
 				})
 				.catch(error => {
+          node.send([null, { ...msg, payload: [RED._('konecty-opportunity.errors.error-processing')] }]);
 					node.error(RED._('konecty-opportunity.errors.error-processing', error));
 					node.status({
 						fill: 'red',
