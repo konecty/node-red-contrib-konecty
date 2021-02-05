@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-konecty",
-  "version": "1.6.9",
+  "version": "1.6.10",
   "repository": {
     "type": "git",
     "url": "https://github.com/Konecty/node-red-contrib-konecty"
@@ -26,9 +26,9 @@
     }
   },
   "dependencies": {
-    "axios": "^0.19.0",
-    "ejson": "^2.2.0",
-    "moment": "^2.24.0",
-    "ws": "^7.1.2"
+    "axios": "^0.21.1",
+    "ejson": "^2.2.1",
+    "moment": "^2.29.1",
+    "ws": "^7.4.3"
   }
 }
