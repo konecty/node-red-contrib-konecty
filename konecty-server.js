@@ -3,8 +3,8 @@ const api = require('./api');
 module.exports = function(RED) {
 	function KonectyServerNode(n) {
 		RED.nodes.createNode(this, n);
-		this.host = n.host;
-		this.key = n.key;
+		this.host = RED.util.evaluateNodeProperty(n.host, n.hostType, this, {});
+		this.key = RED.util.evaluateNodeProperty(n.key, n.keyType, this, {});
 		this.name = n.name;
 	}
 	RED.nodes.registerType('konecty-server', KonectyServerNode);

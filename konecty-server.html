@@ -4,10 +4,31 @@
 		defaults: {
 			name: { value: '', required: true },
 			host: { value: 'konecty-embedded-server', required: true },
-			key: { value: '', required: true }
+			hostType: { value: "str", required: true },
+
+			key: { value: '', required: true },
+			keyType: { value: "str", required: true },
 		},
-		label: function() {
+		label: function () {
 			return this.name;
+		},
+		oneditprepare: function () {
+			const node = this;
+
+			$("#node-config-input-host").typedInput({
+				default: node.hostType || "str",
+				types: ["str", "env", "global"]
+			});
+			$("#node-config-input-key").typedInput({
+				default: node.keyType || "str",
+				types: ["str", "env", "global"]
+			});
+		},
+		oneditsave: function () {
+			const node = this;
+
+			node.hostType = $("#node-config-input-host").typedInput("type");
+			node.keyType = $("#node-config-input-key").typedInput("type");
 		}
 	});
 </script>
